@@ -16,7 +16,7 @@
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
         <header class="inner">
-          <a id="forkme_banner" href="https://github.com/jastone90">My github account with source files</a>
+          <a id="forkme_banner" href="http://www4.ncsu.edu/~jastone2/project/index.html">Fake Company Website for Reference</a>
           <h1 id="project_title">Get me outta dis debt</h1>
           <h2 id="project_tagline">How I do?</h2>
 
@@ -34,6 +34,25 @@ Click me to display Date and Time.
 </button>
 
 <p id="date"></p>
+
+<script src='scripts/Chart.min.js'></script>
+<canvas id="buyers" width="600" height="400"></canvas>
+<script>
+	var buyerData = {
+		labels : ["January","February","March","April","May","June"],
+		datasets : [
+			{
+				fillColor : "rgba(172,194,132,0.4)",
+				strokeColor : "#ACC26D",
+				pointColor : "#fff",
+				pointStrokeColor : "#9DB86D",
+				data : [203,156,99,251,305,247]
+			}
+		]
+	}
+    var buyers = document.getElementById('buyers').getContext('2d');
+    new Chart(buyers).Line(buyerData);
+</script>
 
     </div>
 
