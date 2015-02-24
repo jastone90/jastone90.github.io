@@ -38,6 +38,7 @@ Click me to display Date and Time.
 <script src='scripts/Chart.min.js'></script>
 <canvas id="buyers" width="600" height="400"></canvas>
 <canvas id="countries" width="600" height="400"></canvas>
+<canvas id="income" width="600" height="400"></canvas>
 <script>
 	var buyerData = {
 		labels : ["January","February","March","April","May","June"],
@@ -71,17 +72,36 @@ Click me to display Date and Time.
 		}
 	];
 	var pieOptions = {
-		segmentShowStroke : true,
+		segmentShowStroke : false,
 		animateScale : true
+	}	
+	var barData = {
+		labels : ["January","February","March","April","May","June"],
+		datasets : [
+			{
+				fillColor : "#48A497",
+				strokeColor : "#48A4D1",
+				data : [456,479,324,569,702,600]
+			},
+			{
+				fillColor : "rgba(73,188,170,0.4)",
+				strokeColor : "rgba(72,174,209,0.4)",
+				data : [364,504,605,400,345,320]
+			}
+
+		]
 	}	
 
 	
-	//Line Chart
+	// Line Chart
     var buyers = document.getElementById('buyers').getContext('2d');
     new Chart(buyers).Line(buyerData);
 	// Pie Chart
 	var countries= document.getElementById("countries").getContext("2d");
 	new Chart(countries).Pie(pieData, pieOptions);
+	// Bar Chart
+	var income = document.getElementById("income").getContext("2d");
+	new Chart(income).Bar(barData);
 </script>
 
     </div>
