@@ -35,29 +35,64 @@ Click me to display Date and Time.
 
 <p id="date"></p>
 
+
+    <!-- Inputs -->
 <p>
-<span>Loan Amount:</span>
+Loan Amount:
 <input name="loanAmount" type="text" id="loanAmount"/>
 </p>
-
 <p>
 <span>Loan Interest Rate (%):</span>
 <input name="loanInterestRate" type="text" id="loanInterestRate"/>
 </p>
-
 <p>
 <span>Minimum Payment (Monthly):</span>
 <input name="minPayment" type="text" id="minPayment"/>
 </p>
 
+<button type="button" onclick="calculate()">
+Calculate Loan Repayment
+</button>
 
-<script  type="text/javascript">
-	var loan = document.getElementById('loanAmount').value;
-	//alert(loan);
+
+<script  type="text/javascript">	
+	function calculate(e) {
+		var loan = parseFloat(document.getElementById('loanAmount').value);
+		var interestRate = parseFloat(document.getElementById('loanInterestRate').value)/100;
+		var minPayment = parseFloat(document.getElementById('minPayment').value);
+		alert("Loan: " +loan + "\nInterest: " + interestRate + "\nMinimum Payment: " + minPayment);
+		
+		var debt = [];
+		while(loan>=0){
+			var acruedInterest = parseFloat((loan*interestRate).toFixed(2));
+			var decrementingDebt = acruedInterest - minPayment;
+			loan = parseFloat((loan+decrementingDebt).toFixed(2));
+			debt.push(loan);
+		}
+		alert (debt);
+		
+		
+		// Line Chart
+		
+		var debtLineData = {
+		labels : ["January","February","March","April","May","June","July","August","Sept","Nov","Oct","Dec"],
+		datasets : [
+			{
+				fillColor : "rgba(172,194,132,0.4)",
+				strokeColor : "#ACC26D",
+				pointColor : "#fff",
+				pointStrokeColor : "#9DB86D",
+				data : debt
+			}
+		]
+	}
+    var debtLineGraph = document.getElementById('debtLineGraph').getContext('2d');
+    new Chart(debtLineGraph).Line(debtLineData);
+	}
 
 
 </script>
-
+<canvas id="debtLineGraph" width="600" height="400"></canvas>
 <script src='scripts/Chart.min.js'></script>
 <canvas id="buyers" width="600" height="400"></canvas>
 <canvas id="countries" width="600" height="400"></canvas>
