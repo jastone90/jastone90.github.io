@@ -5,9 +5,10 @@
     <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="Jastone90.GitHub.io : ">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
+<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+   <!--  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">-->
+	
+	
     <title>Alan Stone</title>
   </head>
 
@@ -29,10 +30,6 @@
         <h3>
 <a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>You're in debt son</h3>
 
-<button type="button" onclick="document.getElementById('date').innerHTML = Date()">
-Click me to display Date and Time.
-</button>
-
 <p id="date"></p>
 
 
@@ -50,52 +47,116 @@ Loan Amount:
 <input name="minPayment" type="text" id="minPayment"/>
 </p>
 
+<script>
+//developmental small loan
+document.getElementById('loanAmount').value= 5000;
+document.getElementById('loanInterestRate').value= 7;
+document.getElementById('minPayment').value= 600;
+//developmental House loan
+//document.getElementById('loanAmount').value= 238500;
+//document.getElementById('loanInterestRate').value= 3.125;
+//document.getElementById('minPayment').value= 1021.68;
+</script>
+
 <button type="button" onclick="calculate()">
 Calculate Loan Repayment
 </button>
-
-
+<span id="errorSpan" style="color:red"></span>
+<script src='scripts/Chart.min.js'></script>
 <script  type="text/javascript">	
 	function calculate(e) {
+		document.getElementById('errorSpan').innerHTML ="";
 		var loan = parseFloat(document.getElementById('loanAmount').value);
 		var interestRate = parseFloat(document.getElementById('loanInterestRate').value)/100;
 		var minPayment = parseFloat(document.getElementById('minPayment').value);
-		alert("Loan: " +loan + "\nInterest: " + interestRate + "\nMinimum Payment: " + minPayment);
 		
-		var debt = [];
-		while(loan>=0){
-			var acruedInterest = parseFloat((loan*interestRate).toFixed(2));
-			var decrementingDebt = acruedInterest - minPayment;
-			loan = parseFloat((loan+decrementingDebt).toFixed(2));
-			debt.push(loan);
+		if(minPayment < parseFloat(((loan*interestRate)/12).toFixed(2))){
+			document.getElementById('errorSpan').innerHTML ="Dude You need a higher minimum Payment";
+			return;
 		}
-		alert (debt);
+		
+		
+		
+		var date = new Date();
+		var originalLoanAmount = loan;
+		
+		var label = (date.getMonth()+1)+"/"+date.getFullYear();
+		var debt = [loan];
+		var dates = [label];
+		var dataPoints = 0;
+		var totalInterest = 0;
+		while(loan>0){
+			var acruedInterest = parseFloat(((loan*interestRate)/12).toFixed(2));
+			var decrementingDebt = minPayment-acruedInterest;
+			totalInterest = parseFloat((totalInterest+acruedInterest).toFixed(2));
+			loan = parseFloat((loan-decrementingDebt).toFixed(2));
+			if(loan<0){loan =0;}
+			debt.push(loan);
+			
+			date = new Date(date.setMonth(date.getMonth() + 1));
+			label = (date.getMonth()+1)+"/"+date.getFullYear();
+			dates.push(label);
+		}
+	
+		//alert(date.getMonth() + " " + date.getFullYear());
 		
 		
 		// Line Chart
-		
 		var debtLineData = {
-		labels : ["January","February","March","April","May","June","July","August","Sept","Nov","Oct","Dec"],
+		labels : dates,
 		datasets : [
-			{
+				{
 				fillColor : "rgba(172,194,132,0.4)",
 				strokeColor : "#ACC26D",
 				pointColor : "#fff",
 				pointStrokeColor : "#9DB86D",
 				data : debt
+				}
+			]
+		}
+		
+		var pieData = [
+			{
+			label : "Principal",
+			value : originalLoanAmount,
+			color : "#4ACAB4"
+			},
+			{
+			label : "Interest",
+			value : totalInterest,
+			color : "#FF8153"
 			}
-		]
-	}
+			
+		];
+		var pieOptions = {
+		segmentShowStroke : false,
+		animateScale : true
+		}
+		
+		
+	// Line Chart	
     var debtLineGraph = document.getElementById('debtLineGraph').getContext('2d');
     new Chart(debtLineGraph).Line(debtLineData);
+	// Pie Chart
+	var interestRatio= document.getElementById("interestRatio").getContext("2d");
+	var interestRatioPieChart =new Chart(interestRatio).Pie(pieData, pieOptions);
+	document.getElementById('pieLegend').innerHTML ='<li><span style="background-color:#4ACAB4">Principal: $'+originalLoanAmount+'</span></li>' +
+													'<li><span style="background-color:#FF8153">Interest: $'+totalInterest+'</span></li>';
+	document.getElementById('totalCost').innerHTML ="Total Cost of the Loan: $" + (originalLoanAmount + totalInterest);
 	}
 
 
 </script>
+<div id ="graphLeft">
 <canvas id="debtLineGraph" width="600" height="400"></canvas>
-<script src='scripts/Chart.min.js'></script>
-<canvas id="buyers" width="600" height="400"></canvas>
-<canvas id="countries" width="600" height="400"></canvas>
+</div>
+<div id ="graphright">
+<canvas id="interestRatio" width="600" height="400"></canvas>
+</div>
+<div id="pieLegend"></div>
+<h3 id="totalCost"></h3>
+
+
 <canvas id="income" width="600" height="400"></canvas>
 <script>
 	var buyerData = {
@@ -110,29 +171,7 @@ Calculate Loan Repayment
 			}
 		]
 	}
-	
-	var pieData = [
-		{
-			value: 20,
-			color:"#878BB6"
-		},
-		{
-			value : 40,
-			color : "#4ACAB4"
-		},
-		{
-			value : 10,
-			color : "#FF8153"
-		},
-		{
-			value : 30,
-			color : "#FFEA88"
-		}
-	];
-	var pieOptions = {
-		segmentShowStroke : false,
-		animateScale : true
-	}	
+		
 	var barData = {
 		labels : ["January","February","March","April","May","June"],
 		datasets : [
@@ -150,13 +189,6 @@ Calculate Loan Repayment
 		]
 	}	
 
-	
-	// Line Chart
-    var buyers = document.getElementById('buyers').getContext('2d');
-    new Chart(buyers).Line(buyerData);
-	// Pie Chart
-	var countries= document.getElementById("countries").getContext("2d");
-	new Chart(countries).Pie(pieData, pieOptions);
 	// Bar Chart
 	var income = document.getElementById("income").getContext("2d");
 	new Chart(income).Bar(barData);
