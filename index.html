@@ -29,59 +29,62 @@
 
 <!-- MAIN CONTENT -->
 <div id="main_content_wrap" class="outer">
-    <section id="main_content" class="inner">
-        <h3>Enter your loan(s) below</h3>
+    <section id="main_content" class="innerBody">
+        <h3>Enter loan(s) below:   <button type="button" onclick="addLoan()">Add Loan</button></h3>
 
-        <p id="date"></p>
+        <div id="loanInputs">
+            <label for="loanAmount0">Loan Amount ($):</label>
+            <input name="loanAmount" type="text" id="loanAmount0"/><br>
 
+            <label for="loanInterestRate0">Loan Interest Rate (%):</label>
+            <input name="loanInterestRate" type="text" id="loanInterestRate0"/><br>
 
-        <!-- Inputs -->
-        <div>
-            <label for="loanAmount">Loan Amount ($):</label>
-            <input name="loanAmount" type="text" id="loanAmount"/>
+            <label for="minPayment0">Minimum Monthly Payment ($):</label>
+            <input name="minPayment" type="text" id="minPayment0"/>
         </div>
-        <div>
-            <label for="loanInterestRate">Loan Interest Rate (%):</label>
-            <input name="loanInterestRate" type="text" id="loanInterestRate"/>
-        </div>
-        <div>
-            <label for="minPayment">Minimum Monthly Payment ($):</label>
-            <input name="minPayment" type="text" id="minPayment"/>
-        </div>
+        <div id="additionalLoans"></div>
 
-
-        <button type="button" onclick="calculate()">
-            Calculate Loan Repayment
-        </button>
+        <button type="button" onclick="calculate()">Calculate Loan Repayment</button>
         <span id="errorSpan"></span>
-        <hr width="900" noshade>
 
-
+        <hr width="100%" noshade>
 
         <section id="debtGraphs">
             <div id="graphLeft">
-                <canvas id="debtLineGraph" width="800" height="400"></canvas>
+                <canvas id="debtLineGraph" width="760" height="300"></canvas>
             </div>
             <div id="graphright">
-                <canvas id="interestRatio" width="250" height="250"></canvas>
+                <canvas id="interestRatio" width="200" height="200"></canvas>
             </div>
         </section>
         <div id="pieLegend"></div>
-        <h3 id="totalCost"></h3>
+        <hr width="100%" noshade>
+        <div><h3 id="totalCost"></h3></div>
 
 
         <script type="text/javascript">
 
             //developmental small loan
-            document.getElementById('loanAmount').value = 5000;
-            document.getElementById('loanInterestRate').value = 7;
-            document.getElementById('minPayment').value = 600;
+            document.getElementById('loanAmount0').value = 5000;
+            document.getElementById('loanInterestRate0').value = 7;
+            document.getElementById('minPayment0').value = 600;
             //developmental House loan
-            //            document.getElementById('loanAmount').value= 238500;
-            //            document.getElementById('loanInterestRate').value= 3.125;
-            //            document.getElementById('minPayment').value= 1021.68;
+            //            document.getElementById('loanAmount0').value= 238500;
+            //            document.getElementById('loanInterestRate0').value= 3.125;
+            //            document.getElementById('minPayment0').value= 1021.68;
             var debtLineChart;
             var debtPieChart;
+            var numberOfLoans =0;
+
+            function addLoan(e) {
+                numberOfLoans ++;
+                document.getElementById('additionalLoans').innerHTML +='<div id="loanInputs'+numberOfLoans+'"><hr width="100%" noshade>' +
+                                                                            '<label for="loanAmount">Loan Amount ($):</label>'+
+                                                                            '<input name="loanAmount" type="text" id="loanAmount'+numberOfLoans+'"/><br>' +
+                                                                            '<label for="loanInterestRate">Loan Interest Rate (%):</label>' +
+                                                                            '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><br>' +
+                                                                            '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div>';
+            }
 
             function calculate(e) {
                 document.getElementById('errorSpan').innerHTML = "";
@@ -89,51 +92,61 @@
                     debtLineChart.destroy();
                     debtPieChart.destroy();
                 }
+                var allDebt=[];
+                var allDates=[];
+                var numberOfDates=0;
+                var totalInterest = [];
+                var debtLineData = {
+                    labels: allDates[0],
+                    datasets: []
+                };
 
-                var loan = parseFloat(document.getElementById('loanAmount').value);
-                var interestRate = parseFloat(document.getElementById('loanInterestRate').value) / 100;
-                var minPayment = parseFloat(document.getElementById('minPayment').value);
+                for( var i=0; i<=numberOfLoans; i++){
 
-                if (minPayment < parseFloat(((loan * interestRate) / 12).toFixed(2))) {
-                    document.getElementById('errorSpan').innerHTML = "Dude You need a higher minimum Payment";
-                    return;
-                }
+                    var loan = parseFloat(document.getElementById('loanAmount'+i).value);
+                    var interestRate = parseFloat(document.getElementById('loanInterestRate'+i).value) / 100;
+                    var minPayment = parseFloat(document.getElementById('minPayment'+i).value);
 
+                    if (minPayment < parseFloat(((loan * interestRate) / 12).toFixed(2))) {
+                        document.getElementById('errorSpan').innerHTML = "Dude You need a higher minimum Payment";
+                        return;
+                    }
 
-                var date = new Date();
-                date.setDate(1);
-                var originalLoanAmount = loan;
+                    var originalLoanAmount = loan;
+                    var date = new Date();
+                    date.setDate(1);
+                    var label = (date.getMonth() + 1) + "/" + date.getFullYear();
+                    var debt=[loan];
+                    var dates=[label];
 
-                var label = (date.getMonth() + 1) + "/" + date.getFullYear();
-                var debt = [loan];
-                var dates = [label];
-                var totalInterest = 0;
-                while (loan > 0) {
-                    var acruedInterest = parseFloat(((loan * interestRate) / 12).toFixed(2));
-                    var decrementingDebt = minPayment - acruedInterest;
-                    totalInterest = parseFloat((totalInterest + acruedInterest).toFixed(2));
-                    loan = parseFloat((loan - decrementingDebt).toFixed(2));
-                    if (loan < 0) loan = 0;
-                    debt.push(loan);
+                    totalInterest[i] = 0;
+                    while (loan > 0) {
+                        var acruedInterest = parseFloat(((loan * interestRate) / 12).toFixed(2));
+                        var decrementingDebt = minPayment - acruedInterest;
+                        totalInterest[i] = parseFloat((totalInterest[i] + acruedInterest).toFixed(2));
+                        loan = parseFloat((loan - decrementingDebt).toFixed(2));
+                        if (loan < 0) loan = 0;
+                        debt.push(loan);
 
-                    date = new Date(date.setMonth(date.getMonth() + 1));
-                    label = (date.getMonth() + 1) + "/" + date.getFullYear();
-                    dates.push(label);
+                        date = new Date(date.setMonth(date.getMonth() + 1));
+                        label = (date.getMonth() + 1) + "/" + date.getFullYear();
+                        dates.push(label);
+                    }
+                    allDebt.push(debt);
+
+                    if(dates.length>numberOfDates){
+                            numberOfDates = dates.length;
+                            allDates.push(dates);
+                    }
+                    debtLineData.datasets.push({fillColor: "rgba(172,194,132,0.4)",
+                                                strokeColor: "#ACC26D",
+                                                pointColor: "#fff",
+                                                pointStrokeColor: "#9DB86D",
+                                                data: debt});
                 }
 
                 // Line Chart
-                var debtLineData = {
-                    labels: dates,
-                    datasets: [
-                        {
-                            fillColor: "rgba(172,194,132,0.4)",
-                            strokeColor: "#ACC26D",
-                            pointColor: "#fff",
-                            pointStrokeColor: "#9DB86D",
-                            data: debt
-                        }
-                    ]
-                };
+                debtLineData.labels = allDates[0];
 
                 var pieData = [
                     {
@@ -167,7 +180,7 @@
                 debtPieChart = new Chart(interestRatio).Pie(pieData, pieOptions);
                 document.getElementById('pieLegend').innerHTML = '<li><span style="background-color:#4ACAB4">Principal: $' + originalLoanAmount + '</span></li>' +
                                                                  '<li><span style="background-color:#FF8153">Interest: $' + totalInterest + '</span></li>';
-                document.getElementById('totalCost').innerHTML = "Total Cost of the Loan: $" + (originalLoanAmount + totalInterest);
+                document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (originalLoanAmount + totalInterest);
             }
 
 
@@ -178,7 +191,9 @@
 <!-- FOOTER  -->
 <div id="footer_wrap" class="outer">
     <footer class="inner">
-        <p>Contact: jastone90@gmail.com</p>
+        <div id="contactInfo">
+            <p>Contact: jastone90@gmail.com</p>
+        </div>
     </footer>
 </div>
 </html>
