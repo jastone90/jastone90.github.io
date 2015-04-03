@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="Jastone90.GitHub.io : ">
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-    <script src='scripts/Chart.min.js'></script>
+    <script src='scripts/Chart.js'></script>
 
 
     <title>Loan Payment Visualizer</title>
@@ -76,7 +76,7 @@
             var debtPieChart;
             var numberOfLoans =0;
 
-            function addLoan(e) {
+            function addLoan() {
                 numberOfLoans ++;
                 document.getElementById('additionalLoans').innerHTML +='<div id="loanInputs'+numberOfLoans+'"><hr width="100%" noshade>' +
                                                                             '<label for="loanAmount">Loan Amount ($):</label>'+
@@ -86,7 +86,7 @@
                                                                             '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div>';
             }
 
-            function calculate(e) {
+            function calculate() {
                 document.getElementById('errorSpan').innerHTML = "";
                 if(debtLineChart){
                     debtLineChart.destroy();
@@ -140,15 +140,16 @@
                     allInterest = parseFloat((totalInterest[i] + allInterest).toFixed(2));
                     allLoanAmount =parseFloat((originalLoanAmount + allLoanAmount).toFixed(2));
 
-                    if(dates.length>numberOfDates){
-                            numberOfDates = dates.length;
-                            dateLabels= dates;
-                    }
                     debtLineData.datasets.push({fillColor: "rgba(172,194,132,0.4)",
                                                 strokeColor: "#ACC26D",
                                                 pointColor: "#fff",
                                                 pointStrokeColor: "#9DB86D",
                                                 data: debt});
+
+                    if(dates.length>numberOfDates){
+                        numberOfDates = dates.length;
+                        dateLabels= dates;
+                    }
                 }
 
 
