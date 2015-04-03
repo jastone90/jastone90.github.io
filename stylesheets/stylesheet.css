@@ -278,6 +278,22 @@ Full-Width Styles
     margin: 0 auto;
 }
 
+#loanInputs0{
+  background-color: rgba(172,194,132,0.4);
+  padding: 4px;
+  margin-bottom: 4px;
+}
+#loanInputs1{
+  background-color: rgba(140,181,250,0.4);
+  padding: 4px;
+  margin-bottom: 4px;
+}
+#loanInputs2{
+  background-color: rgba(250,210,140,0.4);
+  padding: 4px;
+  margin-bottom: 4px;
+}
+
 #debtGraphs {
     width: 100%;
     padding: 10px;

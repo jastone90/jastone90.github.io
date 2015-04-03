@@ -32,7 +32,7 @@
     <section id="main_content" class="innerBody">
         <h3>Enter loan(s) below:   <button type="button" onclick="addLoan()">Add Loan</button></h3>
 
-        <div id="loanInputs">
+        <div id="loanInputs0">
             <label for="loanAmount0">Loan Amount ($):</label>
             <input name="loanAmount" type="text" id="loanAmount0"/><br>
 
@@ -65,7 +65,7 @@
         <script type="text/javascript">
 
             //developmental small loan
-            document.getElementById('loanAmount0').value = 5000;
+            document.getElementById('loanAmount0').value = 15000;
             document.getElementById('loanInterestRate0').value = 7;
             document.getElementById('minPayment0').value = 600;
             //developmental House loan
@@ -78,12 +78,21 @@
 
             function addLoan() {
                 numberOfLoans ++;
-                document.getElementById('additionalLoans').innerHTML +='<div id="loanInputs'+numberOfLoans+'"><hr width="100%" noshade>' +
+                document.getElementById('additionalLoans').innerHTML +='<hr width="100%" noshade><div id="loanInputs'+numberOfLoans+'">' +
                                                                             '<label for="loanAmount">Loan Amount ($):</label>'+
                                                                             '<input name="loanAmount" type="text" id="loanAmount'+numberOfLoans+'"/><br>' +
                                                                             '<label for="loanInterestRate">Loan Interest Rate (%):</label>' +
                                                                             '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><br>' +
                                                                             '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div>';
+
+
+                document.getElementById('loanAmount1').value = 8000;
+                document.getElementById('loanInterestRate1').value = 9.8;
+                document.getElementById('minPayment1').value = 675;
+
+                document.getElementById('loanAmount2').value = 6000;
+                document.getElementById('loanInterestRate2').value = 30;
+                document.getElementById('minPayment2').value = 500;
             }
 
             function calculate() {
@@ -124,9 +133,9 @@
 
                     totalInterest[i] = 0;
                     while (loan > 0) {
-                        var acruedInterest = parseFloat(((loan * interestRate) / 12).toFixed(2));
-                        var decrementingDebt = minPayment - acruedInterest;
-                        totalInterest[i] = parseFloat((totalInterest[i] + acruedInterest).toFixed(2));
+                        var accruedInterest = parseFloat(((loan * interestRate) / 12).toFixed(2));
+                        var decrementingDebt = minPayment - accruedInterest;
+                        totalInterest[i] = parseFloat((totalInterest[i] + accruedInterest).toFixed(2));
                         loan = parseFloat((loan - decrementingDebt).toFixed(2));
                         if (loan < 0) loan = 0;
                         debt.push(loan);
@@ -140,10 +149,32 @@
                     allInterest = parseFloat((totalInterest[i] + allInterest).toFixed(2));
                     allLoanAmount =parseFloat((originalLoanAmount + allLoanAmount).toFixed(2));
 
-                    debtLineData.datasets.push({fillColor: "rgba(172,194,132,0.4)",
-                                                strokeColor: "#ACC26D",
+                    var fillColor;
+                    var strokeColor;
+                    var pointStrokeColor;
+
+
+                    if(i==0){
+                        fillColor = "rgba(172,194,132,0.4)";
+                        strokeColor = "#ACC26D";
+                        pointStrokeColor = "#9DB86D";
+                    }
+                    if(i==1){
+                        fillColor = "rgba(140,181,250,0.4)";
+                        strokeColor = "#74a5f9";
+                        pointStrokeColor ="4385F7";
+                    }
+                    if(i==2){
+                        fillColor = "rgba(250,210,140,0.4)";
+                        strokeColor = "#f9c874";
+                        pointStrokeColor ="f8bf5b";
+                    }
+
+                    debtLineData.datasets.push({fillColor: fillColor,
+                                                strokeColor: strokeColor,
                                                 pointColor: "#fff",
-                                                pointStrokeColor: "#9DB86D",
+                                                pointStrokeColor: pointStrokeColor,
+                                                datasetFill : false,
                                                 data: debt});
 
                     if(dates.length>numberOfDates){
