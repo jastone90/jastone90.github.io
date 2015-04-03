@@ -37,7 +37,7 @@
             <input name="loanAmount" type="text" id="loanAmount0"/><br>
 
             <label for="loanInterestRate0">Loan Interest Rate (%):</label>
-            <input name="loanInterestRate" type="text" id="loanInterestRate0"/><br>
+            <input name="loanInterestRate" type="text" id="loanInterestRate0"/><span id =loanInputsData0 class="floatRight"></span><br>
 
             <label for="minPayment0">Minimum Monthly Payment ($):</label>
             <input name="minPayment" type="text" id="minPayment0"/>
@@ -77,13 +77,15 @@
             var numberOfLoans =0;
 
             function addLoan() {
+
                 numberOfLoans ++;
                 document.getElementById('additionalLoans').innerHTML +='<hr width="100%" noshade><div id="loanInputs'+numberOfLoans+'">' +
                                                                             '<label for="loanAmount">Loan Amount ($):</label>'+
                                                                             '<input name="loanAmount" type="text" id="loanAmount'+numberOfLoans+'"/><br>' +
                                                                             '<label for="loanInterestRate">Loan Interest Rate (%):</label>' +
-                                                                            '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><br>' +
+                                                                            '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><span id ="loanInputsData'+numberOfLoans+'"  class="floatRight"></span><br>' +
                                                                             '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div>';
+
 
 
                 document.getElementById('loanAmount1').value = 8000;
@@ -149,6 +151,8 @@
                     allInterest = parseFloat((totalInterest[i] + allInterest).toFixed(2));
                     allLoanAmount =parseFloat((originalLoanAmount + allLoanAmount).toFixed(2));
 
+                    document.getElementById('loanInputsData'+i).innerHTML ='Total Interest: $' +totalInterest[i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
                     var fillColor;
                     var strokeColor;
                     var pointStrokeColor;
@@ -172,7 +176,7 @@
 
                     debtLineData.datasets.push({fillColor: fillColor,
                                                 strokeColor: strokeColor,
-                                                pointColor: "#fff",
+                                                pointColor: strokeColor,
                                                 pointStrokeColor: pointStrokeColor,
                                                 datasetFill : false,
                                                 data: debt});
@@ -215,9 +219,9 @@
                 debtPieChart = new Chart(interestRatio).Pie(pieData, pieOptions);
 
 
-                document.getElementById('pieLegend').innerHTML = '<li><span style="background-color:#4ACAB4">Principal: $' + allLoanAmount + '</span></li>' +
-                                                                 '<li><span style="background-color:#FF8153">Interest: $' + allInterest + '</span></li>';
-                document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (allLoanAmount + allInterest);
+                document.getElementById('pieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoanAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
+                                                                 '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
+                document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (allLoanAmount + allInterest).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
             }
 
 

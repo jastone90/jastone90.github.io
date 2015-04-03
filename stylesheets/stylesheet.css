@@ -278,6 +278,9 @@ Full-Width Styles
     margin: 0 auto;
 }
 
+.floatRight {
+  float: right;
+}
 #loanInputs0{
   background-color: rgba(172,194,132,0.4);
   padding: 4px;
@@ -304,6 +307,16 @@ Full-Width Styles
 }
 #graphright {
     margin-left:0%;
+}
+
+#pieLegendPrincipal {
+  background-color:#4ACAB4;
+  margin-left: 20px;
+}
+
+#pieLegendInterest {
+  background-color:#FF8153;
+  margin-left: 20px;
 }
 
 #forkme_banner {
