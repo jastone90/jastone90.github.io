@@ -281,6 +281,11 @@ Full-Width Styles
 .floatRight {
   float: right;
 }
+
+.floatMiddle{
+  margin-left: 180px;
+}
+
 #loanInputs0{
   background-color: rgba(172,194,132,0.4);
   padding: 4px;

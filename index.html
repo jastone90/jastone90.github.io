@@ -37,7 +37,7 @@
             <input name="loanAmount" type="text" id="loanAmount0"/><br>
 
             <label for="loanInterestRate0">Loan Interest Rate (%):</label>
-            <input name="loanInterestRate" type="text" id="loanInterestRate0"/><span id =loanInputsData0 class="floatRight"></span><br>
+            <input name="loanInterestRate" type="text" id="loanInterestRate0"/><span id =loanInputsDataTime0 class="floatMiddle"></span><span id =loanInputsData0 class="floatRight"></span><br>
 
             <label for="minPayment0">Minimum Monthly Payment ($):</label>
             <input name="minPayment" type="text" id="minPayment0"/>
@@ -83,7 +83,7 @@
                                                                             '<label for="loanAmount">Loan Amount ($):</label>'+
                                                                             '<input name="loanAmount" type="text" id="loanAmount'+numberOfLoans+'"/><br>' +
                                                                             '<label for="loanInterestRate">Loan Interest Rate (%):</label>' +
-                                                                            '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><span id ="loanInputsData'+numberOfLoans+'"  class="floatRight"></span><br>' +
+                                                                            '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><span id ="loanInputsDataTime'+numberOfLoans+'" class="floatMiddle"></span><span id ="loanInputsData'+numberOfLoans+'"  class="floatRight"></span><br>' +
                                                                             '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div>';
 
 
@@ -146,12 +146,14 @@
                         label = (date.getMonth() + 1) + "/" + date.getFullYear();
                         dates.push(label);
                     }
+
                     allDebt.push(debt);
                     allDates.push(dates);
                     allInterest = parseFloat((totalInterest[i] + allInterest).toFixed(2));
                     allLoanAmount =parseFloat((originalLoanAmount + allLoanAmount).toFixed(2));
 
                     document.getElementById('loanInputsData'+i).innerHTML ='Total Interest: $' +totalInterest[i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                    document.getElementById('loanInputsDataTime'+i).innerHTML ='Total Time: '+ dates.length +' months';
 
                     var fillColor;
                     var strokeColor;
