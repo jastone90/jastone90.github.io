@@ -95,7 +95,10 @@
                 var allDebt=[];
                 var allDates=[];
                 var numberOfDates=0;
+                var dateLabels;
                 var totalInterest = [];
+                var allInterest = 0;
+                var allLoanAmount=0;
                 var debtLineData = {
                     labels: allDates[0],
                     datasets: []
@@ -133,10 +136,13 @@
                         dates.push(label);
                     }
                     allDebt.push(debt);
+                    allDates.push(dates);
+                    allInterest = parseFloat((totalInterest[i] + allInterest).toFixed(2));
+                    allLoanAmount =parseFloat((originalLoanAmount + allLoanAmount).toFixed(2));
 
                     if(dates.length>numberOfDates){
                             numberOfDates = dates.length;
-                            allDates.push(dates);
+                            dateLabels= dates;
                     }
                     debtLineData.datasets.push({fillColor: "rgba(172,194,132,0.4)",
                                                 strokeColor: "#ACC26D",
@@ -145,18 +151,26 @@
                                                 data: debt});
                 }
 
-                // Line Chart
-                debtLineData.labels = allDates[0];
 
+
+
+
+
+                // Line Chart
+                debtLineData.labels = dateLabels;
+                var debtLineGraph = document.getElementById('debtLineGraph').getContext('2d');
+                debtLineChart = new Chart(debtLineGraph).Line(debtLineData);
+
+                // Pie Chart
                 var pieData = [
                     {
                         label: "Principal",
-                        value: originalLoanAmount,
+                        value: allLoanAmount,
                         color: "#4ACAB4"
                     },
                     {
                         label: "Interest",
-                        value: totalInterest,
+                        value: allInterest,
                         color: "#FF8153"
                     }
 
@@ -165,22 +179,13 @@
                     segmentShowStroke: false,
                     animateScale: true
                 };
-
-
-                // Line Chart
-
-                var debtLineGraph = document.getElementById('debtLineGraph').getContext('2d');
-                debtLineChart = new Chart(debtLineGraph).Line(debtLineData);
-                //var debtLineGraph = document.getElementById('debtLineGraph').getContext('2d');
-//                debtLineChart.datasets[0].label = dates;
-//                debtLineChart.datasets[0].points = debt;
-//                debtLineChart.update();
-                // Pie Chart
                 var interestRatio = document.getElementById("interestRatio").getContext("2d");
                 debtPieChart = new Chart(interestRatio).Pie(pieData, pieOptions);
-                document.getElementById('pieLegend').innerHTML = '<li><span style="background-color:#4ACAB4">Principal: $' + originalLoanAmount + '</span></li>' +
-                                                                 '<li><span style="background-color:#FF8153">Interest: $' + totalInterest + '</span></li>';
-                document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (originalLoanAmount + totalInterest);
+
+
+                document.getElementById('pieLegend').innerHTML = '<li><span style="background-color:#4ACAB4">Principal: $' + allLoanAmount + '</span></li>' +
+                                                                 '<li><span style="background-color:#FF8153">Interest: $' + allInterest + '</span></li>';
+                document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (allLoanAmount + allInterest);
             }
 
 
