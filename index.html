@@ -34,7 +34,7 @@
 
         <div id="loanInputs0">
             <label for="loanAmount0">Loan Amount ($):</label>
-            <input name="loanAmount" type="text" id="loanAmount0"/><span id =loanRemove0 class="floatRight removeLoan"></span><br>
+            <input name="loanAmount" type="text" id="loanAmount0"/><br>
 
             <label for="loanInterestRate0">Loan Interest Rate (%):</label>
             <input name="loanInterestRate" type="text" id="loanInterestRate0"/><span id =loanInputsDataTime0 class="floatMiddle"></span><span id =loanInputsData0 class="floatRight"></span><br>
@@ -81,7 +81,7 @@
                 numberOfLoans ++;
                 document.getElementById('additionalLoans').innerHTML +='<hr width="100%" noshade><div id="loanInputs'+numberOfLoans+'">' +
                                                                             '<label for="loanAmount">Loan Amount ($):</label>'+
-                                                                            '<input name="loanAmount" type="text" id="loanAmount'+numberOfLoans+'"/><br>' +
+                                                                            '<input name="loanAmount" type="text" id="loanAmount'+numberOfLoans+'"/><span id ="loanRemove'+numberOfLoans+'" onclick="removeLoan(this)" class="floatRight removeLoan"></span><br>' +
                                                                             '<label for="loanInterestRate">Loan Interest Rate (%):</label>' +
                                                                             '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><span id ="loanInputsDataTime'+numberOfLoans+'" class="floatMiddle"></span><span id ="loanInputsData'+numberOfLoans+'"  class="floatRight"></span><br>' +
                                                                             '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div>';
@@ -95,6 +95,14 @@
                 document.getElementById('loanAmount2').value = 6000;
                 document.getElementById('loanInterestRate2').value = 30;
                 document.getElementById('minPayment2').value = 500;
+            }
+
+            function removeLoan(e) {
+                numberOfLoans --;
+                var parent = e.parentNode.parentNode;
+                parent.removeChild(e.parentNode)
+                alert("remove");
+
             }
 
             function calculate() {
