@@ -35,6 +35,14 @@ function removeLoan(e) {
     numberOfLoans --;
     var parent = e.parentNode.parentNode.parentNode;
     parent.removeChild(e.parentNode.parentNode);
+
+    if(debtLineChart){
+        debtLineChart.destroy();
+        debtPieChart.destroy();
+
+        document.getElementById('pieLegend').removeChild(document.getElementById('pieLegendPrincipal'));
+        document.getElementById('pieLegend').removeChild(document.getElementById('pieLegendInterest'));
+    }
 }
 
 function calculate() {
@@ -49,6 +57,7 @@ function calculate() {
     var dateLabels;
     var totalInterest = [];
     var allInterest = 0;
+    var allMinPayment =0;
     var allLoanAmount=0;
     var debtLineData = {
         labels: allDates[0],
@@ -91,6 +100,7 @@ function calculate() {
         allDates.push(dates);
         allInterest = parseFloat((totalInterest[i] + allInterest).toFixed(2));
         allLoanAmount =parseFloat((originalLoanAmount + allLoanAmount).toFixed(2));
+        allMinPayment =parseFloat((minPayment + allMinPayment).toFixed(2));
 
         document.getElementById('loanInputsData'+i).innerHTML ='Total Interest: $' +totalInterest[i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         document.getElementById('loanInputsDataTime'+i).innerHTML ='Total Time: '+ dates.length +' months';
@@ -164,4 +174,10 @@ function calculate() {
     document.getElementById('pieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoanAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
     '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
     document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (allLoanAmount + allInterest).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+    document.getElementById('whatIfTitle').innerHTML = 'How will additional money affect your loans?';
+    document.getElementById('currentMinPayment').innerHTML = 'Currently you have $' + allMinPayment.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</b> in monthly payments towards your loan(s)';
+
+    document.getElementById('newMinPayment').innerHTML = 'Specify an additional Amount of money to apply to your monthly payments <input name="addMinPay" type="text" id="addMinPay"/><input name="minPaySlider" type="range" id="minPaySlider"/>';
+    document.getElementById('addMinPay').value = allMinPayment.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }

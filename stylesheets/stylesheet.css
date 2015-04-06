@@ -345,6 +345,12 @@ Full-Width Styles
   height: 22px;
 
 }
+#totalCost {
+  text-align: center;
+}
+#whatIfTitle {
+  text-align: center;
+}
 
 #header_wrap {
   background: #212121;
