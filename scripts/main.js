@@ -20,7 +20,7 @@ function addLoan() {
     '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><span id ="loanInputsDataTime'+numberOfLoans+'" class="floatMiddle"></span><span id ="loanInputsData'+numberOfLoans+'"  class="floatRight"></span><br>' +
     '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div></div>';
 
-
+    document.getElementById('loanRemove'+ (numberOfLoans -1)).removeAttribute("class");
 
     document.getElementById('loanAmount1').value = 8000;
     document.getElementById('loanInterestRate1').value = 9.8;
@@ -35,6 +35,8 @@ function removeLoan(e) {
     numberOfLoans --;
     var parent = e.parentNode.parentNode.parentNode;
     parent.removeChild(e.parentNode.parentNode);
+
+    document.getElementById('loanRemove'+ (numberOfLoans)).setAttribute("class", "floatRight removeLoan");
 
     if(debtLineChart){
         debtLineChart.destroy();
