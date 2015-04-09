@@ -9,6 +9,8 @@ document.getElementById('minPayment0').value = 600;
 var debtLineChart;
 var debtPieChart;
 var numberOfLoans =0;
+var additionalPay = 0;
+var allMinPayment =0;
 
 function addLoan() {
 
@@ -20,7 +22,12 @@ function addLoan() {
     '<input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/><span id ="loanInputsDataTime'+numberOfLoans+'" class="floatMiddle"></span><span id ="loanInputsData'+numberOfLoans+'"  class="floatRight"></span><br>' +
     '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div></div>';
 
-
+    if(document.getElementById('loanRemove'+ (numberOfLoans -1))){
+        document.getElementById('loanRemove' + (numberOfLoans - 1)).removeAttribute("class");
+    }
+    if(numberOfLoans>=5) {
+        document.getElementById('addLoanButton').disabled = true;
+    }
 
     document.getElementById('loanAmount1').value = 8000;
     document.getElementById('loanInterestRate1').value = 9.8;
@@ -35,6 +42,12 @@ function removeLoan(e) {
     numberOfLoans --;
     var parent = e.parentNode.parentNode.parentNode;
     parent.removeChild(e.parentNode.parentNode);
+
+    document.getElementById('loanRemove'+ (numberOfLoans)).setAttribute("class", "floatRight removeLoan");
+
+    if(numberOfLoans<5) {
+        document.getElementById('addLoanButton').disabled = false;
+    }
 
     if(debtLineChart){
         debtLineChart.destroy();
@@ -57,7 +70,7 @@ function calculate() {
     var dateLabels;
     var totalInterest = [];
     var allInterest = 0;
-    var allMinPayment =0;
+    allMinPayment =0;
     var allLoanAmount=0;
     var debtLineData = {
         labels: allDates[0],
@@ -102,8 +115,8 @@ function calculate() {
         allLoanAmount =parseFloat((originalLoanAmount + allLoanAmount).toFixed(2));
         allMinPayment =parseFloat((minPayment + allMinPayment).toFixed(2));
 
-        document.getElementById('loanInputsData'+i).innerHTML ='Total Interest: $' +totalInterest[i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        document.getElementById('loanInputsDataTime'+i).innerHTML ='Total Time: '+ dates.length +' months';
+        document.getElementById('loanInputsData'+i).innerHTML ='Total Interest: <span class=bold> $' +totalInterest[i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
+        document.getElementById('loanInputsDataTime'+i).innerHTML ='Total Time: <span class=bold>'+ dates.length +' months</span>';
 
         var fillColor;
         var strokeColor;
@@ -127,20 +140,17 @@ function calculate() {
         }
 
         debtLineData.datasets.push({fillColor: fillColor,
-            strokeColor: strokeColor,
-            pointColor: strokeColor,
-            pointStrokeColor: pointStrokeColor,
-            datasetFill : false,
-            data: debt});
+                                    strokeColor: strokeColor,
+                                    pointColor: strokeColor,
+                                    pointStrokeColor: pointStrokeColor,
+                                    datasetFill : false,
+                                    data: debt});
 
         if(dates.length>numberOfDates){
             numberOfDates = dates.length;
             dateLabels= dates;
         }
     }
-
-
-
 
 
 
@@ -173,11 +183,36 @@ function calculate() {
 
     document.getElementById('pieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoanAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
     '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
-    document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (allLoanAmount + allInterest).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (allLoanAmount + allInterest).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') +"<hr width=100% noshade>";
 
+    whatIf(allMinPayment);
+}
+
+function whatIf(allMinPayment) {
     document.getElementById('whatIfTitle').innerHTML = 'How will additional money affect your loans?';
-    document.getElementById('currentMinPayment').innerHTML = 'Currently you have $' + allMinPayment.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</b> in monthly payments towards your loan(s)';
+    document.getElementById('currentMinPayment').innerHTML = 'Currently you have<strong> $' + allMinPayment.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</strong> in minimum monthly payments towards your loan(s)';
 
-    document.getElementById('newMinPayment').innerHTML = 'Specify an additional Amount of money to apply to your monthly payments <input name="addMinPay" type="text" id="addMinPay"/><input name="minPaySlider" type="range" id="minPaySlider"/>';
-    document.getElementById('addMinPay').value = allMinPayment.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    document.getElementById('newMinPayment').innerHTML = 'Specify additional money to apply to monthly payments ($): <input name="addMinPay" type="text" id="addMinPay" onchange="addMinPayUpdate()"/><input name="minPaySlider" type="range" id="minPaySlider"/>' +
+    '<span class="spaceLeft">New Payment: <span id="newPayment" class="bold"></span></span>';
+    //document.getElementById('minPaySlider').defaultValue = 100;
+    //document.getElementById('minPaySlider').min = 0;
+    //document.getElementById('minPaySlider').max = 1000;
+    //document.getElementById('minPaySlider').step = 10;
+    //document.getElementById('minPaySlider').addEventListener("click",sliderUpdate()); //alert('hery');//document.getElementById('addMinPay').value = document.getElementById('minPaySlider').value;
+
+
+   additionalPay = 100;
+
+    document.getElementById('addMinPay').value = additionalPay;
+    document.getElementById('newPayment').innerHTML = "$"+(additionalPay + allMinPayment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+}
+
+function sliderUpdate() {
+    alert("here");
+}
+
+function addMinPayUpdate() {
+    additionalPay = document.getElementById('addMinPay').value;
+    document.getElementById('newPayment').innerHTML = "$"+(additionalPay + allMinPayment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }

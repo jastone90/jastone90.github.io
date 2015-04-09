@@ -53,7 +53,7 @@ body {
   color:#373737;
   background: #212121;
   font-size: 16px;
-  font-family: 'Myriad Pro', Calibri, Helvetica, Arial, sans-serif;
+  font-family: 'Lucida Grande', Calibri, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
@@ -345,11 +345,22 @@ Full-Width Styles
   height: 22px;
 
 }
+
+.bold {
+  font-weight: bold;
+}
+
+.spaceLeft {
+  padding-left: 30px;
+}
 #totalCost {
   text-align: center;
 }
 #whatIfTitle {
   text-align: center;
+}
+#addMinPay {
+  width: 60px;
 }
 
 #header_wrap {
