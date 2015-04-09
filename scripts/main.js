@@ -21,6 +21,9 @@ function addLoan() {
     '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div></div>';
 
     document.getElementById('loanRemove'+ (numberOfLoans -1)).removeAttribute("class");
+    if(numberOfLoans>=5) {
+        document.getElementById('addLoanButton').disabled = true;
+    }
 
     document.getElementById('loanAmount1').value = 8000;
     document.getElementById('loanInterestRate1').value = 9.8;
@@ -37,6 +40,10 @@ function removeLoan(e) {
     parent.removeChild(e.parentNode.parentNode);
 
     document.getElementById('loanRemove'+ (numberOfLoans)).setAttribute("class", "floatRight removeLoan");
+
+    if(numberOfLoans<5) {
+        document.getElementById('addLoanButton').disabled = false;
+    }
 
     if(debtLineChart){
         debtLineChart.destroy();
