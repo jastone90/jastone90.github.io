@@ -353,6 +353,14 @@ Full-Width Styles
 .spaceLeft {
   padding-left: 30px;
 }
+
+.spaceRight {
+  padding-right: 30px;
+}
+
+.paddingBottom{
+  padding-bottom: 85px;
+}
 #totalCost {
   text-align: center;
 }
