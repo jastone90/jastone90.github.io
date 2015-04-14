@@ -302,6 +302,18 @@ Full-Width Styles
   margin-bottom: 4px;
 }
 
+.backGround0{
+  background-color: rgba(172,194,132,0.4);
+}
+
+.backGround1{
+  background-color: rgba(140,181,250,0.4);
+}
+
+.backGround2{
+  background-color: rgba(250,210,140,0.4);
+}
+
 #debtGraphs {
     width: 100%;
     padding: 10px;

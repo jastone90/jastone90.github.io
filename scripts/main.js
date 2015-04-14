@@ -198,7 +198,7 @@ function whatIf(allMinPayment) {
                                                                                                                     '<span class="floatRight">New Payment: <span id="newPayment" class="bold spaceRight"></span>' +
                                                                                                                     '<button  id="recalculateButton" type="button" onclick="recalculate()">Recalculate Loans</button></span>';
 
-    additionalPay = 100;
+    additionalPay = 1000;
 
     document.getElementById('addMinPay').value = additionalPay;
     document.getElementById('newPayment').innerHTML = "$"+(additionalPay + allMinPayment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -231,6 +231,8 @@ function recalculate() {
     var totalInterest = [];
     var allInterest = 0;
     var allLoanAmount = 0;
+    var totalLoans = [];
+    var colors = [];
     var debtLineData = {
         labels: allDates[0],
         datasets: []
@@ -245,6 +247,8 @@ function recalculate() {
         var loan = loanData[i][1];
         var minPayment = loanData[i][2];
         var color = loanData[i][3];
+        colors.push(color);
+        totalLoans.push(loan);
 
         totalMinPayment = minPayment;
         if(i==0){
@@ -354,6 +358,29 @@ function recalculate() {
 
     document.getElementById('whatIfPieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoanAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
     '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
+
+    var whatIfDebtData =[allDebt,allDates,totalInterest,totalLoans,colors];
+    compareLoans(whatIfDebtData);
+
+}
+
+function compareLoans(whatIfData) {
+    document.getElementById('compareLoans').innerHTML ="";
+    for(var i=0;i<whatIfData[0].length;i++){
+        document.getElementById('compareLoans').innerHTML +='<div id="compareLoans'+ i +'" class="backGround'+ i +'"></div>';
+    }
+
+    for(var i=0;i<whatIfData[0].length;i++){
+        var loanNumber =  whatIfData[4][i];
+        var loanAmt = whatIfData[3][i];
+        var newInterest = whatIfData[2][i];
+        var newTime = whatIfData[1][i].length;
+
+        document.getElementById('compareLoans' + loanNumber).innerHTML = '<span id="loanAmt">Loan Amount: $:'+loanAmt+'</span>' +
+                                                                            '<span id="newTime" class="floatMiddle">New Total Time: '+ newTime + 'months</span>' +
+                                                                            '<span id="newInterest" class="floatRight">New Total Interest: $'+ newInterest+'</span>';
+    }
+
 }
 
 function orderLoansInterestRate() {
