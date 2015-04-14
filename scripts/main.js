@@ -8,6 +8,8 @@ document.getElementById('minPayment0').value = 600;
 //            document.getElementById('minPayment0').value= 1021.68;
 var debtLineChart;
 var debtPieChart;
+var whatIfDebtLineChart;
+var whatIfDebtPieChart;
 var numberOfLoans =0;
 var additionalPay = 0;
 var allMinPayment =0;
@@ -25,7 +27,7 @@ function addLoan() {
     if(document.getElementById('loanRemove'+ (numberOfLoans -1))){
         document.getElementById('loanRemove' + (numberOfLoans - 1)).removeAttribute("class");
     }
-    if(numberOfLoans>=5) {
+    if(numberOfLoans>=4) {
         document.getElementById('addLoanButton').disabled = true;
     }
 
@@ -45,7 +47,7 @@ function removeLoan(e) {
 
     document.getElementById('loanRemove'+ (numberOfLoans)).setAttribute("class", "floatRight removeLoan");
 
-    if(numberOfLoans<5) {
+    if(numberOfLoans<4) {
         document.getElementById('addLoanButton').disabled = false;
     }
 
@@ -210,12 +212,16 @@ function addMinPayUpdate() {
 }
 
 function buildWhatIfCharts(){
-    document.getElementById('whatIfDebtGraphs').innerHTML = '<hr width="100%" noshade><section id="debtGraphs">'+
+    document.getElementById('whatIfDebtGraphs').innerHTML = '<hr width="100%" noshade><section id="whatIfDebtGraphs" class="paddingBottom">'+
                                                                                     '<div id="graphLeft"><canvas id="whatIfDebtLineGraph" width="760" height="300"></canvas></div>'+
-                                                                                    '<div id="graphright"><canvas id="whatIfInterestRatio" width="200" height="200"></canvas></div></section>';
+                                                                                    '<div id="graphright"><canvas id="whatIfInterestRatio" width="200" height="200"></canvas></div><div id="whatIfPieLegend"></div></section>';
 }
 
 function recalculate() {
+    if(whatIfDebtLineChart){
+        whatIfDebtLineChart.destroy();
+        whatIfDebtPieChart.destroy();
+    }
 
     buildWhatIfCharts();
     var allDebt = [];
@@ -238,6 +244,7 @@ function recalculate() {
         var interestRate = loanData[i][0];
         var loan = loanData[i][1];
         var minPayment = loanData[i][2];
+        var color = loanData[i][3];
 
         totalMinPayment = minPayment;
         if(i==0){
@@ -289,17 +296,17 @@ function recalculate() {
         var pointStrokeColor;
 
 
-        if(i==0){
+        if(color==0){
             fillColor = "rgba(172,194,132,0.4)";
             strokeColor = "#ACC26D";
             pointStrokeColor = "#9DB86D";
         }
-        if(i==1){
+        if(color==1){
             fillColor = "rgba(140,181,250,0.4)";
             strokeColor = "#74a5f9";
             pointStrokeColor ="4385F7";
         }
-        if(i==2){
+        if(color==2){
             fillColor = "rgba(250,210,140,0.4)";
             strokeColor = "#f9c874";
             pointStrokeColor ="f8bf5b";
@@ -322,7 +329,7 @@ function recalculate() {
     // Line Chart
     debtLineData.labels = dateLabels;
     var debtLineGraph = document.getElementById('whatIfDebtLineGraph').getContext('2d');
-    debtLineChart = new Chart(debtLineGraph).Line(debtLineData);
+    whatIfDebtLineChart = new Chart(debtLineGraph).Line(debtLineData);
 
     // Pie Chart
     var pieData = [
@@ -343,7 +350,10 @@ function recalculate() {
         animateScale: true
     };
     var interestRatio = document.getElementById("whatIfInterestRatio").getContext("2d");
-    debtPieChart = new Chart(interestRatio).Pie(pieData, pieOptions);
+    whatIfDebtPieChart = new Chart(interestRatio).Pie(pieData, pieOptions);
+
+    document.getElementById('whatIfPieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoanAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
+    '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
 }
 
 function orderLoansInterestRate() {
@@ -353,7 +363,7 @@ function orderLoansInterestRate() {
         var interestRate = parseFloat(document.getElementById('loanInterestRate' + i).value) / 100;
         var loanAmount = parseFloat(document.getElementById('loanAmount' + i).value);
         var minPayment = parseFloat(document.getElementById('minPayment' + i).value);
-        allLoanData.push([interestRate,loanAmount,minPayment]);
+        allLoanData.push([interestRate,loanAmount,minPayment,i]);
     }
 
     return allLoanData.sort(function(a, b){return b[0]-a[0]});
