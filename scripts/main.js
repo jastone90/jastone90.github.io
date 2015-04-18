@@ -272,7 +272,7 @@ function recalculate() {
                 var currentAccruedInterest = 0;
                 var currentInterestRate = interestRate[j];
                 currentAccruedInterest = parseFloat(((currentLoanAmount * currentInterestRate) / 12).toFixed(2));
-                totalInterest[j]= totalInterest[j] +currentAccruedInterest;
+                totalInterest[j]= parseFloat((totalInterest[j] +currentAccruedInterest).toFixed(2));
                 currentLoanAmount = (currentLoanAmount + currentAccruedInterest) - currentMinPayment;
                 totalMonthlyPayment += currentMinPayment;
                 if(j==loanReceivingAdditionalPay && newMonth){
