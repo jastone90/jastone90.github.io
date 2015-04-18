@@ -394,7 +394,7 @@ function recalculate() {
 function compareLoans(whatIfData) {
     document.getElementById('compareLoans').innerHTML ="";
     for(var i=0;i<whatIfData[0].length;i++){
-        document.getElementById('compareLoans').innerHTML +='<div id="compareLoans'+ i +'" class="backGround'+ i +'"></div>';
+        document.getElementById('compareLoans').innerHTML +='<div id="compareLoans'+ i +'" class=" compareLoans backGround'+ i +'"></div>';
     }
 
     for(var i=0;i<whatIfData[0].length;i++){
@@ -403,9 +403,9 @@ function compareLoans(whatIfData) {
         var newTime = whatIfData[2][i];
         var color = whatIfData[3][i];
 
-        document.getElementById('compareLoans' + color).innerHTML = '<span id="loanAmt">Loan Amount: $'+loanAmount+'</span>' +
-                                                                            '<span id="newTime" class="floatMiddle">New Total Time: '+ newTime + ' months</span>' +
-                                                                            '<span id="newInterest" class="floatRight">New Total Interest: $'+ newInterest+'</span>';
+        document.getElementById('compareLoans' + color).innerHTML = '<span id="loanAmt" class="left">Loan Amount: $'+loanAmount+'</span>' +
+                                                                            '<span id="newTime" class="center">New Total Time: '+ newTime + ' months</span>' +
+                                                                            '<span id="newInterest" class="right">New Total Interest: $'+ newInterest+'</span>';
     }
 
 }

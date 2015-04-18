@@ -383,6 +383,22 @@ Full-Width Styles
   width: 60px;
 }
 
+.compareLoans {
+  text-align: center;
+}
+
+.left {
+  margin:auto auto auto 0;
+  float: left;
+}
+.right {
+  margin:auto 0 auto auto;
+  float: right;
+}
+.center {
+  margin:auto;
+}
+
 #header_wrap {
   background: #212121;
   background: -moz-linear-gradient(top, #373737, #212121);
