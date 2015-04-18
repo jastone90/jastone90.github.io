@@ -198,7 +198,7 @@ function whatIf(allMinPayment) {
                                                                                                                     '<span class="floatRight">New Payment: <span id="newPayment" class="bold spaceRight"></span>' +
                                                                                                                     '<button  id="recalculateButton" type="button" onclick="recalculate()">Recalculate Loans</button></span>';
 
-    additionalPay = 1000;
+    additionalPay = 100;
 
     document.getElementById('addMinPay').value = additionalPay;
     document.getElementById('newPayment').innerHTML = "$"+(additionalPay + allMinPayment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -206,8 +206,8 @@ function whatIf(allMinPayment) {
 }
 
 function addMinPayUpdate() {
-    additionalPay = document.getElementById('addMinPay').value;
-    var newPayment = parseFloat(additionalPay) + allMinPayment;
+    additionalPay = parseFloat(document.getElementById('addMinPay').value);
+    var newPayment = parseFloat(additionalPay + allMinPayment);
     this.document.getElementById('newPayment').innerHTML = "$"+ newPayment.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 }
 
@@ -224,114 +224,142 @@ function recalculate() {
     }
 
     buildWhatIfCharts();
-    var allDebt = [];
-    var allDates = [];
-    var numberOfDates = 0;
-    var dateLabels;
+    var loanData =orderLoansInterestRate();
+
+    var interestRate = [];
+    var loan = [];
+    var loanAmounts =[];
+    var minPayment = [];
+    var color = [];
+    var debt=[];
+    var paidOff = [];
     var totalInterest = [];
-    var allInterest = 0;
-    var allLoanAmount = 0;
-    var totalLoans = [];
-    var colors = [];
+    var totalMonths = [];
+    var allInterest =0;
+    var allLoans =0;
+
+
+    for (var i=0; i < loanData.length; i++) {
+        interestRate.push(loanData[i][0]);
+        loan.push(loanData[i][1]);
+        loanAmounts.push(loanData[i][1]);
+        minPayment.push(loanData[i][2]);
+        color.push(loanData[i][3]);
+        debt.push([loan[i]]);
+        paidOff.push(false);
+        totalInterest[i]=0;
+        allLoans = parseFloat((allLoans+loanData[i][1]).toFixed(2));
+    }
+
+    var loanReceivingAdditionalPay =0;
+    var currentAdditionalPay = parseFloat(additionalPay.toFixed(2));
+    var leftOverPayment =0;
+    var repurposedMinPayment = 0;
+    var computingNewLoans =true;
+    var month= 0;
+    var newMonth =false;
+    var totalMonthlyPayment = 0;
+    while(computingNewLoans) {
+        for (var j=0; j<i; j++){
+            if(j==0){
+                totalMonthlyPayment=0;
+                month++;
+                newMonth = true;
+            }
+            var currentLoanAmount = loan[j];
+            if (currentLoanAmount > 0) {
+                var currentMinPayment = minPayment[j];
+                var currentAccruedInterest = 0;
+                var currentInterestRate = interestRate[j];
+                currentAccruedInterest = parseFloat(((currentLoanAmount * currentInterestRate) / 12).toFixed(2));
+                totalInterest[j]= totalInterest[j] +currentAccruedInterest;
+                currentLoanAmount = (currentLoanAmount + currentAccruedInterest) - currentMinPayment;
+                totalMonthlyPayment += currentMinPayment;
+                if(j==loanReceivingAdditionalPay && newMonth){
+                    currentLoanAmount = currentLoanAmount - currentAdditionalPay;
+                    totalMonthlyPayment += currentAdditionalPay;
+                    newMonth=false;
+                }
+                if (leftOverPayment > 0 && j==loanReceivingAdditionalPay) {
+                    currentLoanAmount = currentLoanAmount - leftOverPayment;
+                    totalMonthlyPayment += leftOverPayment;
+                    leftOverPayment = 0;
+                }
+                if (currentLoanAmount <= 0) {
+
+                    leftOverPayment = parseFloat(-currentLoanAmount.toFixed(2));
+                    totalMonthlyPayment -= leftOverPayment;
+                    currentLoanAmount = 0;
+                    paidOff[j] = true; //Congrats!
+                    allInterest = parseFloat((totalInterest[j] + allInterest).toFixed(2));
+                    repurposedMinPayment = repurposedMinPayment +currentMinPayment;
+                    currentAdditionalPay = currentAdditionalPay +currentMinPayment;
+
+                    for(var k=0; k<i; k++){
+                        if(paidOff[k] == false){
+                            loanReceivingAdditionalPay = k;
+                            break;
+                        }
+                    }
+                    totalMonths[j]=month;
+                }
+                currentLoanAmount = parseFloat((currentLoanAmount).toFixed(2));
+                debt[j].push(currentLoanAmount);
+                loan[j]=currentLoanAmount;
+            }
+            if(paidOff[j]){
+                function isTrue(element) {
+                    return element == true;
+                }
+                computingNewLoans = !paidOff.every(isTrue);
+            }
+        }
+        //alert('Repurposed Min Payments: ' + repurposedMinPayment + '\n Current Additional Pay: ' +currentAdditionalPay +'\n Total:'+ totalMonthlyPayment);
+    }
+    var date = new Date();
+    date.setDate(1);
+    var label = (date.getMonth()+1) + "/" + date.getFullYear();
+    var dates = [label];
+    for (var i=0; i < month; i++){
+        date = new Date(date.setMonth(date.getMonth()+1));
+        label = (date.getMonth()+1) + "/" + date.getFullYear();
+        dates.push(label);
+    }
+
     var debtLineData = {
-        labels: allDates[0],
         datasets: []
     };
-    var i=0;
-    var loanData =orderLoansInterestRate();
-    var totalMinPayment = 0;
-    var endMonth= 0; // Tell which loop we are on
-    var leftOverPayment =0;
-    while (i < loanData.length) {
-        var interestRate = loanData[i][0];
-        var loan = loanData[i][1];
-        var minPayment = loanData[i][2];
-        var color = loanData[i][3];
-        colors.push(color);
-        totalLoans.push(loan);
 
-        totalMinPayment = minPayment;
-        if(i==0){
-            totalMinPayment = minPayment + parseFloat(document.getElementById('addMinPay').value);
-        }
+    var fillColor;
+    var strokeColor;
+    var pointStrokeColor;
 
-        var originalLoanAmount = loan;
-        var date = new Date();
-        date.setDate(1);
-        var label = (date.getMonth() + 1) + "/" + date.getFullYear();
-        var debt = [loan];
-        var dates = [label];
-
-        totalInterest[i] = 0;
-        var months=0;
-        while (loan > 0) {
-            if(months == endMonth && i!=0){ //Last Loan Ended
-                totalMinPayment = totalMinPayment + loanData[i-1][2] + parseFloat(document.getElementById('addMinPay').value);
-                //leftOverPayment=0;
-            }
-
-
-            var accruedInterest = parseFloat(((loan * interestRate) / 12).toFixed(2));
-            var decrementingDebt = totalMinPayment - accruedInterest;
-            totalInterest[i] = parseFloat((totalInterest[i] + accruedInterest).toFixed(2));
-            loan = parseFloat((loan - decrementingDebt).toFixed(2));
-            if(loan < 0) {
-                leftOverPayment = -loan;
-                endMonth = months;
-                loan = 0;
-            }
-            debt.push(loan);
-
-            date = new Date(date.setMonth(date.getMonth() + 1));
-            label = (date.getMonth() + 1) + "/" + date.getFullYear();
-            dates.push(label);
-
-            months++;
-        }
-
-        allDebt.push(debt);
-        allDates.push(dates);
-        allInterest = parseFloat((totalInterest[i] + allInterest).toFixed(2));
-        allLoanAmount = parseFloat((originalLoanAmount + allLoanAmount).toFixed(2));
-
-
-        var fillColor;
-        var strokeColor;
-        var pointStrokeColor;
-
-
-        if(color==0){
+    for (var i=0; i < loanData.length; i++) {
+        if(color[i]==0){
             fillColor = "rgba(172,194,132,0.4)";
             strokeColor = "#ACC26D";
             pointStrokeColor = "#9DB86D";
         }
-        if(color==1){
+        if(color[i]==1){
             fillColor = "rgba(140,181,250,0.4)";
             strokeColor = "#74a5f9";
             pointStrokeColor ="4385F7";
         }
-        if(color==2){
+        if(color[i]==2){
             fillColor = "rgba(250,210,140,0.4)";
             strokeColor = "#f9c874";
             pointStrokeColor ="f8bf5b";
         }
-
         debtLineData.datasets.push({fillColor: fillColor,
             strokeColor: strokeColor,
             pointColor: strokeColor,
             pointStrokeColor: pointStrokeColor,
             datasetFill : false,
-            data: debt});
-
-        if(dates.length>numberOfDates){
-            numberOfDates = dates.length;
-            dateLabels= dates;
-        }
-
-        i++;
+            data: debt[i]});
     }
+
     // Line Chart
-    debtLineData.labels = dateLabels;
+    debtLineData.labels = dates;
     var debtLineGraph = document.getElementById('whatIfDebtLineGraph').getContext('2d');
     whatIfDebtLineChart = new Chart(debtLineGraph).Line(debtLineData);
 
@@ -339,7 +367,7 @@ function recalculate() {
     var pieData = [
         {
             label: "Principal",
-            value: allLoanAmount,
+            value: allLoans,
             color: "#4ACAB4"
         },
         {
@@ -356,12 +384,11 @@ function recalculate() {
     var interestRatio = document.getElementById("whatIfInterestRatio").getContext("2d");
     whatIfDebtPieChart = new Chart(interestRatio).Pie(pieData, pieOptions);
 
-    document.getElementById('whatIfPieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoanAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
+    document.getElementById('whatIfPieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoans.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
     '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
 
-    var whatIfDebtData =[allDebt,allDates,totalInterest,totalLoans,colors];
+    var whatIfDebtData =[loanAmounts,totalInterest,totalMonths,color];
     compareLoans(whatIfDebtData);
-
 }
 
 function compareLoans(whatIfData) {
@@ -371,13 +398,13 @@ function compareLoans(whatIfData) {
     }
 
     for(var i=0;i<whatIfData[0].length;i++){
-        var loanNumber =  whatIfData[4][i];
-        var loanAmt = whatIfData[3][i];
-        var newInterest = whatIfData[2][i];
-        var newTime = whatIfData[1][i].length;
+        var loanAmount =  whatIfData[0][i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        var newInterest = whatIfData[1][i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        var newTime = whatIfData[2][i];
+        var color = whatIfData[3][i];
 
-        document.getElementById('compareLoans' + loanNumber).innerHTML = '<span id="loanAmt">Loan Amount: $:'+loanAmt+'</span>' +
-                                                                            '<span id="newTime" class="floatMiddle">New Total Time: '+ newTime + 'months</span>' +
+        document.getElementById('compareLoans' + color).innerHTML = '<span id="loanAmt">Loan Amount: $'+loanAmount+'</span>' +
+                                                                            '<span id="newTime" class="floatMiddle">New Total Time: '+ newTime + ' months</span>' +
                                                                             '<span id="newInterest" class="floatRight">New Total Interest: $'+ newInterest+'</span>';
     }
 
