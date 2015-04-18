@@ -399,7 +399,7 @@ function compareLoans(whatIfData) {
 
     for(var i=0;i<whatIfData[0].length;i++){
         var loanAmount =  whatIfData[0][i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        var newInterest = whatIfData[1][i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');//tesst
+        var newInterest = whatIfData[1][i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         var newTime = whatIfData[2][i];
         var color = whatIfData[3][i];
 
