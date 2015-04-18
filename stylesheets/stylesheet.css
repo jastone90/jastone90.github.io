@@ -398,6 +398,13 @@ Full-Width Styles
 .center {
   margin:auto;
 }
+.red {
+  color: #ff0000;
+}
+
+.green {
+  color: #00CC00;
+}
 
 #header_wrap {
   background: #212121;
@@ -486,13 +493,6 @@ Full-Width Styles
     margin-left: 400px;
 
 }
-
-
-
-#errorSpan {
-    color: #ff0000;
-}
-
 
 /*******************************************************************************
 Small Device Styles

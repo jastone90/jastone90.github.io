@@ -392,20 +392,29 @@ function recalculate() {
 }
 
 function compareLoans(whatIfData) {
-    document.getElementById('compareLoans').innerHTML ="";
+    $("#compareLoans").html("");
     for(var i=0;i<whatIfData[0].length;i++){
-        document.getElementById('compareLoans').innerHTML +='<div id="compareLoans'+ i +'" class=" compareLoans backGround'+ i +'"></div>';
+        $("#compareLoans").html(function(j, origText){
+            return origText +'<div id="compareLoans'+ i +'" class=" compareLoans backGround'+ i +'"></div>';
+        });
+
     }
 
     for(var i=0;i<whatIfData[0].length;i++){
+
         var loanAmount =  whatIfData[0][i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        var newInterest = whatIfData[1][i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        var newInterest = whatIfData[1][i];
         var newTime = whatIfData[2][i];
         var color = whatIfData[3][i];
-
+        var oldTime =  $("#loanInputsDataTime" + color).html();
+        var oldInterest =  $("#loanInputsData" + color +" span").text();
+        oldTime = parseInt(oldTime.substring(31,oldTime.indexOf("months")));
+        oldInterest = parseFloat(oldInterest.substring(2));
+        var diffTime = newTime - oldTime;
+        var diffInterest =(newInterest-oldInterest).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         document.getElementById('compareLoans' + color).innerHTML = '<span id="loanAmt" class="left">Loan Amount: $'+loanAmount+'</span>' +
-                                                                            '<span id="newTime" class="center">New Total Time: '+ newTime + ' months</span>' +
-                                                                            '<span id="newInterest" class="right">New Total Interest: $'+ newInterest+'</span>';
+                                                                            '<span id="newTime" class="center">New Total Time: '+ newTime + ' months<span class="green bold"> ('+diffTime+')</span></span>' +
+                                                                            '<span id="newInterest" class="right">New Total Interest: $'+ newInterest+'<span class="green bold"> ($'+diffInterest+')</span></span>';
     }
 
 }
