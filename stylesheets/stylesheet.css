@@ -327,12 +327,14 @@ Full-Width Styles
 }
 
 #pieLegendPrincipal {
-  background-color:#4ACAB4;
+  background-color:#4D4F53;
+  color: #ffffff;
   margin-left: 20px;
 }
 
 #pieLegendInterest {
-  background-color:#FF8153;
+  background-color:#991F00;
+  color: #ffffff;
   margin-left: 20px;
 }
 
