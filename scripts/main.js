@@ -170,17 +170,19 @@ function calculate() {
         {
             label: "Principal",
             value: allLoanAmount,
-            color: "#4ACAB4"
+            color: "#4D4F53",
+            highlight: "#5F6164"
         },
         {
             label: "Interest",
             value: allInterest,
-            color: "#FF8153"
+            color: "#991F00",
+            highlight: "#A33519"
         }
 
     ];
     var pieOptions = {
-        segmentShowStroke: false,
+        segmentShowStroke: true,
         animateScale: true
     };
     var interestRatio = document.getElementById("interestRatio").getContext("2d");
@@ -200,9 +202,14 @@ function whatIf(allMinPayment) {
     $("#newMinPayment").html('Specify additional money to apply to monthly payments ($): <input name="addMinPay" type="text" id="addMinPay"/>' +
                                                                                         '<span class="floatRight">New Payment: <span id="newPayment" class="bold spaceRight"></span>' +
                                                                                         '<button  id="recalculateButton" type="button" onclick="recalculate()">Recalculate Loans</button></span>');
-    additionalPay = 100;
+    additionalPay = 1000;
     var newPay = (additionalPay + allMinPayment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     var addMinPayDiv = $("#addMinPay");
+
+
+    $('html, body').animate({
+        scrollTop: addMinPayDiv.offset().top
+    }, 600);
 
     addMinPayDiv.val(additionalPay);
     $("#newPayment").html("$"+newPay);
@@ -375,24 +382,26 @@ function recalculate() {
         {
             label: "Principal",
             value: allLoans,
-            color: "#4ACAB4"
+            color: "#4D4F53",
+            highlight: "#5F6164"
         },
         {
             label: "Interest",
             value: allInterest,
-            color: "#FF8153"
+            color: "#991F00",
+            highlight: "#A33519"
         }
 
     ];
     var pieOptions = {
-        segmentShowStroke: false,
+        segmentShowStroke: true,
         animateScale: true
     };
     var interestRatio = document.getElementById("whatIfInterestRatio").getContext("2d");
     whatIfDebtPieChart = new Chart(interestRatio).Pie(pieData, pieOptions);
 
-    document.getElementById('whatIfPieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoans.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
-    '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
+    $('#whatIfPieLegend').html('<span id="pieLegendPrincipal">Principal: $' + allLoans.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
+                                '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>');
 
     var whatIfDebtData =[loanAmounts,totalInterest,totalMonths,color];
     compareLoans(whatIfDebtData);
@@ -424,10 +433,15 @@ function compareLoans(whatIfData) {
         var diffInterest =(newInterest-oldInterest);
         totalDiffInterest = totalDiffInterest + diffInterest;
         diffInterest =diffInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
-        document.getElementById('compareLoans' + color).innerHTML = '<span id="loanAmt" class="left">Loan Amount: $'+loanAmount+'</span>' +
-                                                                            '<span id="newTime" class="center">New Total Time: '+ newTime + ' months<span class="green bold"> ('+diffTime+')</span></span>' +
-                                                                            '<span id="newInterest" class="right">New Total Interest: $'+ newInterest+'<span class="green bold"> ($'+diffInterest+')</span></span>';
+        $('#compareLoans' + color).html('<span id="loanAmt" class="left">Loan Amount: $'+loanAmount+'</span>' +
+                                        '<span id="newTime" class="center">New Total Time: '+ newTime + ' months<span class="green bold"> ('+diffTime+')</span></span>' +
+                                        '<span id="newInterest" class="right">New Total Interest: $'+ newInterest+'<span class="green bold"> ($'+diffInterest+')</span></span>');
     }
+
+
+
+
+
     totalCost= totalCost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     totalDiffInterest = totalDiffInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     compareLoansDiv.html(function(j, origText){
@@ -435,18 +449,14 @@ function compareLoans(whatIfData) {
     });
 
     $('#whatIfCompare').slideDown(500, function(){
-        var thisDiv = $('#whatIfDebtGraphs');
+        var thisDiv = $('#whatIfCompare');
         $('html, body').animate({
             scrollTop: thisDiv.offset().top
         }, 600);
     });
-    //$('#compareLoans').slideDown();
-
-
 }
 
 function orderLoansInterestRate() {
-
     var allLoanData=[];
     for (var i = 0; i <= numberOfLoans; i++) {
         var interestRate = parseFloat(document.getElementById('loanInterestRate' + i).value) / 100;
@@ -454,7 +464,5 @@ function orderLoansInterestRate() {
         var minPayment = parseFloat(document.getElementById('minPayment' + i).value);
         allLoanData.push([interestRate,loanAmount,minPayment,i]);
     }
-
     return allLoanData.sort(function(a, b){return b[0]-a[0]});
-
 }
