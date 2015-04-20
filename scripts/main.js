@@ -435,7 +435,7 @@ function compareLoans(whatIfData) {
     });
 
     $('#whatIfCompare').slideDown(500, function(){
-        var thisDiv = $('#whatIfDebtGraphs');
+        var thisDiv = $('#whatIfCompare');
         $('html, body').animate({
             scrollTop: thisDiv.offset().top
         }, 600);
