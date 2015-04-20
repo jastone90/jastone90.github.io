@@ -383,6 +383,9 @@ Full-Width Styles
   width: 60px;
 }
 
+.center {
+  text-align: center;
+}
 .compareLoans {
   text-align: center;
 }
@@ -403,7 +406,11 @@ Full-Width Styles
 }
 
 .green {
-  color: #00CC00;
+   color: #00CC00;
+ }
+
+.invisible {
+  display: none;
 }
 
 #header_wrap {
