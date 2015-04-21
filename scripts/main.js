@@ -251,8 +251,12 @@ function recalculate() {
     var totalMonths = [];
     var allInterest =0;
     var allLoans =0;
+    var paymentTableColor = [];
+    var paymentTableDebt = [];
+    var paymentTableDate = [];
+    var paymentTableMonthlyPay = [];
 
-
+    var currentAdditionalPay = parseFloat(additionalPay.toFixed(2));
     for (var i=0; i < loanData.length; i++) {
         interestRate.push(loanData[i][0]);
         loan.push(loanData[i][1]);
@@ -263,10 +267,19 @@ function recalculate() {
         paidOff.push(false);
         totalInterest[i]=0;
         allLoans = parseFloat((allLoans+loanData[i][1]).toFixed(2));
+        paymentTableDebt[i] = [loanData[i][1]];
+        paymentTableColor[i]= loanData[i][3];
+        paymentTableDate[i] = [0];
+
+        if(i==0){
+            paymentTableMonthlyPay[i] = [(loanData[i][2] +currentAdditionalPay)];
+        }else{
+            paymentTableMonthlyPay[i] = [(loanData[i][2])];
+        }
+
     }
 
     var loanReceivingAdditionalPay =0;
-    var currentAdditionalPay = parseFloat(additionalPay.toFixed(2));
     var leftOverPayment =0;
     var repurposedMinPayment = 0;
     var computingNewLoans =true;
@@ -275,6 +288,7 @@ function recalculate() {
     var totalMonthlyPayment = 0;
     while(computingNewLoans) {
         for (var j=0; j<i; j++){
+            var currentLoanPayment = 0;
             if(j==0){
                 totalMonthlyPayment=0;
                 month++;
@@ -285,24 +299,29 @@ function recalculate() {
                 var currentMinPayment = minPayment[j];
                 var currentAccruedInterest = 0;
                 var currentInterestRate = interestRate[j];
+
                 currentAccruedInterest = parseFloat(((currentLoanAmount * currentInterestRate) / 12).toFixed(2));
                 totalInterest[j]= parseFloat((totalInterest[j] +currentAccruedInterest).toFixed(2));
                 currentLoanAmount = (currentLoanAmount + currentAccruedInterest) - currentMinPayment;
+
                 totalMonthlyPayment += currentMinPayment;
+                currentLoanPayment += currentMinPayment;
                 if(j==loanReceivingAdditionalPay && newMonth){
                     currentLoanAmount = currentLoanAmount - currentAdditionalPay;
                     totalMonthlyPayment += currentAdditionalPay;
+                    currentLoanPayment += currentAdditionalPay;
                     newMonth=false;
                 }
                 if (leftOverPayment > 0 && j==loanReceivingAdditionalPay) {
                     currentLoanAmount = currentLoanAmount - leftOverPayment;
                     totalMonthlyPayment += leftOverPayment;
+                    currentLoanPayment += leftOverPayment;
                     leftOverPayment = 0;
                 }
                 if (currentLoanAmount <= 0) {
-
                     leftOverPayment = parseFloat(-currentLoanAmount.toFixed(2));
                     totalMonthlyPayment -= leftOverPayment;
+                    currentLoanPayment -= leftOverPayment;
                     currentLoanAmount = 0;
                     paidOff[j] = true; //Congrats!
                     allInterest = parseFloat((totalInterest[j] + allInterest).toFixed(2));
@@ -327,6 +346,10 @@ function recalculate() {
                 }
                 computingNewLoans = !paidOff.every(isTrue);
             }
+
+            paymentTableDebt[j].push(currentLoanAmount);
+            paymentTableMonthlyPay[j].push(currentLoanPayment);
+            paymentTableDate[j].push(month);
         }
         //alert('Repurposed Min Payments: ' + repurposedMinPayment + '\n Current Additional Pay: ' +currentAdditionalPay +'\n Total:'+ totalMonthlyPayment);
     }
@@ -403,6 +426,62 @@ function recalculate() {
     $('#whatIfPieLegend').html('<span id="pieLegendPrincipal">Principal: $' + allLoans.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
                                 '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>');
 
+
+    $('#payTable').html('<table id="whatIfTable">');
+    var table = document.getElementById("whatIfTable");
+    var tableMonthlyPaymentSum = [];
+    for(var r = 0; r<=(i+1);r++){
+        var row = table.insertRow(r);
+        for (var c = 0; c < (paymentTableDebt[0].length + 1); c++) {
+
+            var cell;
+            //labels
+            if(c==0){
+                cell = row.insertCell(c);
+                if (r > 0 && r != i+1){
+                    cell.innerHTML = "Loan: $" + paymentTableDebt[r-1][0].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')+'\n' +
+                                        "Rate: "+ (interestRate[r-1]*100).toFixed(2) + "%";
+                    cell.className = 'backGround'+paymentTableColor[r - 1];
+                }
+                if (r == i+1) {//footer
+                    cell.innerHTML = "Total Monthly\n Payment";
+                }
+            }
+
+            if (c > 0) {
+                if (r == 0) {
+                    var th = document.createElement('th');
+                    row.appendChild(th);
+                    var headerDate = new Date();
+                    headerDate.setDate(1);
+                    var headerLabel = (headerDate.getMonth()+1) + "/" + headerDate.getFullYear();
+                    var currentMonth = paymentTableDate[r][c - 1];
+                    headerDate = new Date(headerDate.setMonth(headerDate.getMonth()+currentMonth));
+                    headerLabel = (headerDate.getMonth()+1) + "/" + headerDate.getFullYear();
+
+                    th.innerHTML = headerLabel;
+                }
+
+
+                if(r!=0){
+                    cell = row.insertCell(c);
+                    if (r > 0 && r!= i+1) {//Content
+                        if(!tableMonthlyPaymentSum[c-1]){
+                            tableMonthlyPaymentSum[c-1]=0;
+                        }
+                        tableMonthlyPaymentSum[c-1] = parseFloat(tableMonthlyPaymentSum[c-1])+parseFloat(paymentTableMonthlyPay[r - 1][c - 1]);
+                        cell.innerHTML = '$' + (paymentTableMonthlyPay[r - 1][c - 1]).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                        cell.className = 'backGround'+paymentTableColor[r - 1];
+                    }
+                    if (r == i+1) {//footer
+                        cell.innerHTML = '$' + (tableMonthlyPaymentSum[c - 1]).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                    }
+                }
+            }
+        }
+    }
+
+
     var whatIfDebtData =[loanAmounts,totalInterest,totalMonths,color];
     compareLoans(whatIfDebtData);
 }
@@ -447,6 +526,8 @@ function compareLoans(whatIfData) {
     compareLoansDiv.html(function(j, origText){
         return origText +'<div id="compareLoanSummary" class="center"><h3>New Cost of the Loan(s): $'+totalCost +'<span class="green"> ($'+totalDiffInterest+')</span></h3></div>';
     });
+
+
 
     $('#whatIfCompare').slideDown(500, function(){
         var thisDiv = $('#whatIfCompare');

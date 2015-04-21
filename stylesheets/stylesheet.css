@@ -26,7 +26,7 @@ time, mark, audio, video {
   padding: 0;
   border: 0;
   font: inherit;
-  vertical-align: baseline;
+  /*vertical-align: baseline;*/
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -236,7 +236,7 @@ hr {
 table {
   border: 1px solid #373737;
   margin-bottom: 20px;
-  text-align: left;
+  text-align: center;
  }
 
 th {
@@ -247,8 +247,8 @@ th {
  }
 
 td {
-  padding: 10px;
   border: 1px solid #373737;
+  white-space:pre
  }
 
 form {
