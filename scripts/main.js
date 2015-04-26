@@ -255,6 +255,7 @@ function recalculate() {
     var paymentTableDebt = [];
     var paymentTableDate = [];
     var paymentTableMonthlyPay = [];
+    var paymentTableMonthlyInterest = [];
 
     var currentAdditionalPay = parseFloat(additionalPay.toFixed(2));
     for (var i=0; i < loanData.length; i++) {
@@ -270,12 +271,8 @@ function recalculate() {
         paymentTableDebt[i] = [loanData[i][1]];
         paymentTableColor[i]= loanData[i][3];
         paymentTableDate[i] = [0];
-
-        if(i==0){
-            paymentTableMonthlyPay[i] = [(loanData[i][2] +currentAdditionalPay)];
-        }else{
-            paymentTableMonthlyPay[i] = [(loanData[i][2])];
-        }
+        paymentTableMonthlyPay[i] = [0];
+        paymentTableMonthlyInterest[i] = [0];
 
     }
 
@@ -295,9 +292,10 @@ function recalculate() {
                 newMonth = true;
             }
             var currentLoanAmount = loan[j];
+            var currentAccruedInterest = 0;
+
             if (currentLoanAmount > 0) {
                 var currentMinPayment = minPayment[j];
-                var currentAccruedInterest = 0;
                 var currentInterestRate = interestRate[j];
 
                 currentAccruedInterest = parseFloat(((currentLoanAmount * currentInterestRate) / 12).toFixed(2));
@@ -346,7 +344,7 @@ function recalculate() {
                 }
                 computingNewLoans = !paidOff.every(isTrue);
             }
-
+            paymentTableMonthlyInterest[j].push(currentAccruedInterest);
             paymentTableDebt[j].push(currentLoanAmount);
             paymentTableMonthlyPay[j].push(currentLoanPayment);
             paymentTableDate[j].push(month);
@@ -439,12 +437,12 @@ function recalculate() {
             if(c==0){
                 cell = row.insertCell(c);
                 if (r > 0 && r != i+1){
-                    cell.innerHTML = "Loan: $" + paymentTableDebt[r-1][0].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')+'\n' +
+                    cell.innerHTML = "Loan: $" + paymentTableDebt[r-1][0].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')+'</br>' +
                                         "Rate: "+ (interestRate[r-1]*100).toFixed(2) + "%";
-                    cell.className = 'backGround'+paymentTableColor[r - 1];
+                    cell.className = 'tableHeight backGround'+paymentTableColor[r - 1];
                 }
                 if (r == i+1) {//footer
-                    cell.innerHTML = "Total Monthly\n Payment";
+                    cell.innerHTML = "Total Monthly</br> Payment";
                 }
             }
 
@@ -470,8 +468,14 @@ function recalculate() {
                             tableMonthlyPaymentSum[c-1]=0;
                         }
                         tableMonthlyPaymentSum[c-1] = parseFloat(tableMonthlyPaymentSum[c-1])+parseFloat(paymentTableMonthlyPay[r - 1][c - 1]);
-                        cell.innerHTML = '$' + (paymentTableMonthlyPay[r - 1][c - 1]).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                        cell.innerHTML = '<span class=bold>$' + (paymentTableDebt[r - 1][c - 1]).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span></br>';
+
+                        if(paymentTableMonthlyInterest[r - 1][c - 1] > 0 || c==1){
+                            cell.innerHTML += '<span class="smallFont interest">+$' + (paymentTableMonthlyInterest[r - 1][c - 1]).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span></br>' +
+                                                '<span class="smallFont">-$' + (paymentTableMonthlyPay[r - 1][c - 1].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')) + '</span>';
+                        }
                         cell.className = 'backGround'+paymentTableColor[r - 1];
+
                     }
                     if (r == i+1) {//footer
                         cell.innerHTML = '$' + (tableMonthlyPaymentSum[c - 1]).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');

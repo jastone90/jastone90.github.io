@@ -235,20 +235,22 @@ hr {
 
 table {
   border: 1px solid #373737;
-  margin-bottom: 20px;
   text-align: center;
  }
 
 th {
   font-family: 'Lucida Grande', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  padding: 10px;
-  background: #373737;
+  padding: 8px;
+  background: #4D4F53;
   color: #fff;
+  border: 1px solid #373737;
  }
 
 td {
   border: 1px solid #373737;
-  white-space:pre
+  white-space:pre;
+  padding-left: 2px;
+  padding-right: 2px;
  }
 
 form {
@@ -314,6 +316,10 @@ Full-Width Styles
   background-color: rgba(250,210,140,0.4);
 }
 
+.tableHeight{
+  height : 40px;
+}
+
 #debtGraphs {
     width: 100%;
     padding: 10px;
@@ -324,6 +330,10 @@ Full-Width Styles
 }
 #graphright {
     margin-left:0%;
+}
+#payTable{
+  width: 100%;
+  overflow-x: scroll;
 }
 
 #pieLegendPrincipal {
@@ -410,6 +420,14 @@ Full-Width Styles
 .green {
    color: #00CC00;
  }
+
+.smallFont {
+  font-size: small;
+
+}
+.interest {
+  color: rgb(203,53,53)
+}
 
 .invisible {
   display: none;
