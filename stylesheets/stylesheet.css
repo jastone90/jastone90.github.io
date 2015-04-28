@@ -288,6 +288,10 @@ Full-Width Styles
   margin-left: 180px;
 }
 
+#addButton{
+  padding-left:10px;
+}
+
 #loanInputs0{
   background-color: rgba(172,194,132,0.4);
   padding: 4px;
@@ -315,6 +319,12 @@ Full-Width Styles
 .backGround2{
   background-color: rgba(250,210,140,0.4);
 }
+
+.totalMonPayColor{
+  background-color: rgba(153,31,0,0.76);
+  color:#fff;
+}
+
 
 .tableHeight{
   height : 40px;
@@ -391,6 +401,11 @@ Full-Width Styles
 #whatIfTitle {
   text-align: center;
 }
+
+#payOffChoiceTitle {
+  text-align: center;
+}
+
 #addMinPay {
   width: 60px;
 }
@@ -400,6 +415,19 @@ Full-Width Styles
 }
 .compareLoans {
   text-align: center;
+
+}
+
+#payOffChoiceButton {
+   padding-top:10px;
+ }
+
+#compareLoansDiv {
+  padding-top: 5px;
+}
+
+.newPaymentTitle{
+  padding-left: 50px;
 }
 
 .left {

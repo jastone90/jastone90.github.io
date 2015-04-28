@@ -1,6 +1,6 @@
 //developmental small loan
 document.getElementById('loanAmount0').value = 15000;
-document.getElementById('loanInterestRate0').value = 7;
+document.getElementById('loanInterestRate0').value = 17;
 document.getElementById('minPayment0').value = 600;
 //developmental House loan
 //            document.getElementById('loanAmount0').value= 238500;
@@ -40,7 +40,7 @@ function addLoan() {
     $("#minPayment1").val(675);
 
     $("#loanAmount2").val(6000);
-    $("#loanInterestRate2").val(30);
+    $("#loanInterestRate2").val(3);
     $("#minPayment2").val(500);
 }
 
@@ -191,7 +191,9 @@ function calculate() {
 
     document.getElementById('pieLegend').innerHTML = '<span id="pieLegendPrincipal">Principal: $' + allLoanAmount.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span><br>' +
     '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
-    document.getElementById('totalCost').innerHTML = "Total Cost of the Loan(s): $" + (allLoanAmount + allInterest).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') +"<hr width=100% noshade>";
+    $('#totalCost').html('<h3>Total Cost of the Loan(s): $' + (allLoanAmount + allInterest).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + 
+                            '<span class="red smallFont">*Minimum payments only</span></h3>'+
+                            '<hr width=100% noshade>');
 
     whatIf(allMinPayment);
 }
@@ -199,10 +201,19 @@ function calculate() {
 function whatIf(allMinPayment) {
     $("#whatIfTitle").html("How will additional money affect your loans?");
     $("#currentMinPayment").html('Currently you have<strong> $' + allMinPayment.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</strong> in minimum monthly payments towards your loan(s)');
-    $("#newMinPayment").html('Specify additional money to apply to monthly payments ($): <input name="addMinPay" type="text" id="addMinPay"/>' +
-                                                                                        '<span class="floatRight">New Payment: <span id="newPayment" class="bold spaceRight"></span>' +
-                                                                                        '<button  id="recalculateButton" type="button" onclick="recalculate()">Recalculate Loans</button></span>');
-    additionalPay = 1000;
+    $("#newMinPayment").html('Specify additional money to apply to monthly payments ($): <input name="addMinPay" type="text" id="addMinPay"/>');
+
+
+    $("#payOffChoiceTitle").html('<span class="center">When it comes to additional monthly payments there are two ideologies:</br></span>');
+
+    $("#payOffChoice").html('<span class=bold>Avalanche:</span> Target additonal money to the highest interest loans first. Finacially, this is the best option. </br>'+
+                                '<span class=bold>Snowball:</span> Target the lowest balance loans first. Psychologically, this can be more motivating by quickly reducing the number of loans you have.');
+
+    $("#payOffChoiceButton").html('<button  id="recalculateButton" type="button" onclick="recalculate()">Recalculate Loan(s)</button>' +
+                                    '<input id="avalancheRadio" checked="true" class="radioChoice" type="radio" value="avalanche"/>Avalanche</input>' +
+                                    '<input id="snowballRadio" class="radioChoice" type="radio" value="snowball"/>Snowball</input>'+
+                                    '<span class="newPaymentTitle">New Payment: <span id="newPayment" class="bold spaceRight"></span></span>');
+    additionalPay = 100;
     var newPay = (additionalPay + allMinPayment).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     var addMinPayDiv = $("#addMinPay");
 
@@ -225,6 +236,15 @@ function whatIf(allMinPayment) {
         $("#newPayment").html("$"+ newPayment.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,'));
     });
 
+    $("#avalancheRadio").on('change',function(){
+        $("#snowballRadio").attr('checked',false);
+        //alert($("#avalancheRadio").val());
+    });
+    $("#snowballRadio").on('change',function(){
+        $("#avalancheRadio").attr('checked',false);
+        //alert($("#snowballRadio").val());
+    });
+
 }
 
 function recalculate() {
@@ -232,13 +252,19 @@ function recalculate() {
         whatIfDebtLineChart.destroy();
         whatIfDebtPieChart.destroy();
     }
+    var payOffChoice;
+    if($("#avalancheRadio").is(':checked')){
+        payOffChoice = 'Avalanche';
+    }else{
+        payOffChoice = 'Snowball';
+    }
 
     $('#whatIfDebtGraphs').html('<hr width="100%" noshade><section id="whatIfDebtGraphs" class="paddingBottom">'+
                                                             '<div id="graphLeft"><canvas id="whatIfDebtLineGraph" width="760" height="300"></canvas></div>'+
                                                             '<div id="graphright"><canvas id="whatIfInterestRatio" width="200" height="200"></canvas></div>' +
                                                             '<div id="whatIfPieLegend"></div>' +
                                                         '</section>');
-    var loanData =orderLoansInterestRate();
+    var loanData =orderLoansInterestRate(payOffChoice);
 
     var interestRate = [];
     var loan = [];
@@ -435,14 +461,23 @@ function recalculate() {
             var cell;
             //labels
             if(c==0){
-                cell = row.insertCell(c);
-                if (r > 0 && r != i+1){
-                    cell.innerHTML = "Loan: $" + paymentTableDebt[r-1][0].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')+'</br>' +
-                                        "Rate: "+ (interestRate[r-1]*100).toFixed(2) + "%";
-                    cell.className = 'tableHeight backGround'+paymentTableColor[r - 1];
-                }
-                if (r == i+1) {//footer
-                    cell.innerHTML = "Total Monthly</br> Payment";
+                if(r!=0) {
+                    cell = row.insertCell(c);
+                    if (r > 0 && r != i + 1) {
+                        cell.innerHTML = '<span class=bold>Loan Balance: $' + paymentTableDebt[r - 1][0].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span></br>' +
+                        '<span class="smallFont interest">Accrued Interest (' + (interestRate[r - 1] * 100).toFixed(2) + '%)</span></br>' +
+                        '<span class="smallFont">Monthly Payment</span>';
+                        cell.className = 'tableHeight backGround' + paymentTableColor[r - 1];
+                    }
+                    if (r == i + 1) {//footer
+                        cell.innerHTML = "Total Monthly</br> Payment";
+                        cell.className = 'totalMonPayColor';
+                    }
+                }else{
+                    var th = document.createElement('th');
+                    row.appendChild(th);
+
+                    th.innerHTML = payOffChoice;
                 }
             }
 
@@ -459,7 +494,6 @@ function recalculate() {
 
                     th.innerHTML = headerLabel;
                 }
-
 
                 if(r!=0){
                     cell = row.insertCell(c);
@@ -479,6 +513,7 @@ function recalculate() {
                     }
                     if (r == i+1) {//footer
                         cell.innerHTML = '$' + (tableMonthlyPaymentSum[c - 1]).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+                        cell.className = 'totalMonPayColor';
                     }
                 }
             }
@@ -491,14 +526,9 @@ function recalculate() {
 }
 
 function compareLoans(whatIfData) {
-    var compareLoansDiv = $("#compareLoans");
+    var compareLoansDiv = $("#compareLoansDiv");
     compareLoansDiv.html("");
-    for(var i=0;i<whatIfData[0].length;i++){
-        $("#compareLoans").html(function(j, origText){
-            return origText +'<div id="compareLoans'+ i +'" class=" compareLoans backGround'+ i +'"></div>';
-        });
 
-    }
     var totalCost=0;
     var totalDiffInterest =0;
     for(var i=0;i<whatIfData[0].length;i++){
@@ -516,6 +546,11 @@ function compareLoans(whatIfData) {
         var diffInterest =(newInterest-oldInterest);
         totalDiffInterest = totalDiffInterest + diffInterest;
         diffInterest =diffInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+        $("#compareLoansDiv").html(function(j, origText){
+            return origText +'<div id="compareLoans'+ color +'" class=" compareLoans backGround'+ color +'"></div>';
+        });
+
         $('#compareLoans' + color).html('<span id="loanAmt" class="left">Loan Amount: $'+loanAmount+'</span>' +
                                         '<span id="newTime" class="center">New Total Time: '+ newTime + ' months<span class="green bold"> ('+diffTime+')</span></span>' +
                                         '<span id="newInterest" class="right">New Total Interest: $'+ newInterest+'<span class="green bold"> ($'+diffInterest+')</span></span>');
@@ -541,7 +576,7 @@ function compareLoans(whatIfData) {
     });
 }
 
-function orderLoansInterestRate() {
+function orderLoansInterestRate(payOffChoice) {
     var allLoanData=[];
     for (var i = 0; i <= numberOfLoans; i++) {
         var interestRate = parseFloat(document.getElementById('loanInterestRate' + i).value) / 100;
@@ -549,5 +584,12 @@ function orderLoansInterestRate() {
         var minPayment = parseFloat(document.getElementById('minPayment' + i).value);
         allLoanData.push([interestRate,loanAmount,minPayment,i]);
     }
-    return allLoanData.sort(function(a, b){return b[0]-a[0]});
+
+    if(payOffChoice == 'Avalanche'){
+        allLoanData.sort(function(a, b){return b[0]-a[0]});
+    }
+    if(payOffChoice == 'Snowball'){
+        allLoanData.sort(function(a, b){return a[1]-b[1]});
+    }
+    return allLoanData;
 }
