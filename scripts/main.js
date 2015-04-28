@@ -546,6 +546,7 @@ function compareLoans(whatIfData) {
         var diffInterest =(newInterest-oldInterest);
         totalDiffInterest = totalDiffInterest + diffInterest;
         diffInterest =diffInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+        newInterest =newInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 
         $("#compareLoansDiv").html(function(j, origText){
             return origText +'<div id="compareLoans'+ color +'" class=" compareLoans backGround'+ color +'"></div>';
