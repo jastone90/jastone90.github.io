@@ -32,7 +32,7 @@
         <!-- MAIN CONTENT -->
         <div id="main_content_wrap" class="outer">
             <section id="main_content" class="innerBody">
-                <h3>Enter loan(s) below:   <button id="addLoanButton" type="button" onclick="addLoan()">Add Loan</button></h3>
+                <h3>Enter loan(s) below:</h3>
 
                 <div id="loanInputs0">
                     <label for="loanAmount0">Loan Amount ($):</label>
@@ -46,7 +46,7 @@
                 </div>
                 <div id="additionalLoans"></div>
 
-                <button type="button" onclick="calculate()">Calculate Loan Repayment</button>
+                <button type="button" onclick="calculate()">Calculate Loan Repayment</button><span id="addButton"><button id="addLoanButton" type="button" onclick="addLoan()">Add Loan</button></span>
                 <span id="errorSpan" class="red"></span>
 
                 <hr width="100%" noshade>
@@ -61,16 +61,19 @@
                 </section>
                 <div id="pieLegend"></div>
                 <hr width="100%" noshade>
-                <div><h3 id="totalCost"></h3></div>
+                <div id="totalCost"></div>
 
                 <div id="whatIfContent">
                     <h4 id="whatIfTitle"></h4>
                     <div id="currentMinPayment"></div>
                     <div id="newMinPayment"></div>
+                    <h5 id ="payOffChoiceTitle"></h5>
+                    <div id="payOffChoice"></div>
+                    <div id="payOffChoiceButton"></div>
                     <div id="whatIfCompare" class="invisible">
                         <div id="whatIfDebtGraphs" ></div>
                         <div id="payTable" ></div>
-                        <div id="compareLoans" ></div>
+                        <div id="compareLoansDiv" ></div>
                         <div id="finalSummary" ></div>
                     </div>
                 </div>
