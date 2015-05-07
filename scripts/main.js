@@ -6,6 +6,19 @@ document.getElementById('minPayment0').value = 600;
 //            document.getElementById('loanAmount0').value= 238500;
 //            document.getElementById('loanInterestRate0').value= 3.125;
 //            document.getElementById('minPayment0').value= 1021.68;
+
+$("#forkme_banner").click(function(){
+    var src = "../LoanAdvisor/images/AOD.JPG";
+    var img = document.createElement("img");
+    img.src = src;
+    //img.width = width;
+    //img.height = height;
+    //img.alt = alt;
+    this.appendChild(img);
+});
+
+
+
 var debtLineChart;
 var debtPieChart;
 var whatIfDebtLineChart;
@@ -58,6 +71,10 @@ function removeLoan(e) {
     parent.removeChild(e.parentNode.parentNode);
 
     document.getElementById('loanRemove'+ (numberOfLoans)).setAttribute("class", "floatRight removeLoan");
+
+    $("#loanRemove"+numberOfLoans).click(function(){
+        removeLoan(this);
+    });
 
     if(numberOfLoans<4) {
         document.getElementById('addLoanButton').disabled = false;
