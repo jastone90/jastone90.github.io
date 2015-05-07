@@ -8,7 +8,7 @@ document.getElementById('minPayment0').value = 600;
 //            document.getElementById('minPayment0').value= 1021.68;
 
 $("#forkme_banner").click(function(){
-    var src = "../LoanAdvisor/images/AOD.JPG";
+    var src = "../images/AOD.JPG";
     var img = document.createElement("img");
     img.src = src;
     //img.width = width;
