@@ -16,23 +16,31 @@ var allMinPayment =0;
 
 function addLoan() {
     numberOfLoans ++;
+    var currentLoanRemove;
     $("#additionalLoans").html(function(j, origText){
         return origText +'<div id="loanInputSection'+numberOfLoans+'" class="invisible">' +
-                            '<hr width="100%" noshade><div id="loanInputs'+numberOfLoans+'">' +
+                            '<hr width="100%" noshade="true"><div id="loanInputs'+numberOfLoans+'">' +
                             '<label for="loanAmount">Loan Amount ($):</label>'+
-                            '<input name="loanAmount" type="text" id="loanAmount'+numberOfLoans+'"/><span id ="loanRemove'+numberOfLoans+'" onclick="removeLoan(this)" class="floatRight removeLoan"></span><br>' +
+                            '<input name="loanAmount" type="text" id="loanAmount'+numberOfLoans+'"/><span id ="loanRemove'+numberOfLoans+'" class="floatRight removeLoan"></span><br>' +
                             '<label for="loanInterestRate">Loan Interest Rate (%):</label><input name="loanInterestRate" type="text" id="loanInterestRate'+numberOfLoans+'"/>' +
                             '<span id ="loanInputsDataTime'+numberOfLoans+'" class="floatMiddle"></span><span id ="loanInputsData'+numberOfLoans+'"  class="floatRight"></span><br>' +
                             '<label for="minPayment">Minimum Monthly Payment ($):</label><input name="minPayment" type="text" id="minPayment'+numberOfLoans+'"/></div>' +
                         '</div>';
     });
-    if($('#loanRemove' + (numberOfLoans - 1))){
-        $('#loanRemove' + (numberOfLoans - 1)).attr("class","");
+
+    $("#loanRemove"+numberOfLoans).click(function(){
+       removeLoan(this);
+    });
+
+    currentLoanRemove = $('#loanRemove' + (numberOfLoans - 1));
+    if(currentLoanRemove){
+        currentLoanRemove.attr("class","");
     }
     if(numberOfLoans>=4) {
         $("#addLoanButton").attr("disabled",true);
     }
     $('#loanInputSection'+numberOfLoans).slideDown("fast");
+
 
 
     $("#loanAmount1").val(8000);
@@ -193,7 +201,7 @@ function calculate() {
     '<span id="pieLegendInterest">Interest: $' + allInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span>';
     $('#totalCost').html('<h3>Total Cost of the Loan(s): $' + (allLoanAmount + allInterest).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + 
                             '<span class="red smallFont">*Minimum payments only</span></h3>'+
-                            '<hr width=100% noshade>');
+                            '<hr width=100% noshade="true">');
 
     whatIf(allMinPayment);
 }
@@ -259,7 +267,7 @@ function recalculate() {
         payOffChoice = 'Snowball';
     }
 
-    $('#whatIfDebtGraphs').html('<hr width="100%" noshade><section id="whatIfDebtGraphs" class="paddingBottom">'+
+    $('#whatIfDebtGraphs').html('<hr width="100%" noshade="true"><section id="whatIfDebtGraphs" class="paddingBottom">'+
                                                             '<div id="graphLeft"><canvas id="whatIfDebtLineGraph" width="760" height="300"></canvas></div>'+
                                                             '<div id="graphright"><canvas id="whatIfInterestRatio" width="200" height="200"></canvas></div>' +
                                                             '<div id="whatIfPieLegend"></div>' +
@@ -381,7 +389,8 @@ function recalculate() {
     date.setDate(1);
     var label = (date.getMonth()+1) + "/" + date.getFullYear();
     var dates = [label];
-    for (var i=0; i < month; i++){
+
+    for (var m=0; m < month; m++){
         date = new Date(date.setMonth(date.getMonth()+1));
         label = (date.getMonth()+1) + "/" + date.getFullYear();
         dates.push(label);
@@ -395,18 +404,18 @@ function recalculate() {
     var strokeColor;
     var pointStrokeColor;
 
-    for (var i=0; i < loanData.length; i++) {
-        if(color[i]==0){
+    for (var n=0; n < loanData.length; n++) {
+        if(color[n]==0){
             fillColor = "rgba(172,194,132,0.4)";
             strokeColor = "#ACC26D";
             pointStrokeColor = "#9DB86D";
         }
-        if(color[i]==1){
+        if(color[n]==1){
             fillColor = "rgba(140,181,250,0.4)";
             strokeColor = "#74a5f9";
             pointStrokeColor ="4385F7";
         }
-        if(color[i]==2){
+        if(color[n]==2){
             fillColor = "rgba(250,210,140,0.4)";
             strokeColor = "#f9c874";
             pointStrokeColor ="f8bf5b";
@@ -416,7 +425,7 @@ function recalculate() {
             pointColor: strokeColor,
             pointStrokeColor: pointStrokeColor,
             datasetFill : false,
-            data: debt[i]});
+            data: debt[n]});
     }
 
     // Line Chart
@@ -453,6 +462,7 @@ function recalculate() {
 
     $('#payTable').html('<table id="whatIfTable">');
     var table = document.getElementById("whatIfTable");
+    var th;
     var tableMonthlyPaymentSum = [];
     for(var r = 0; r<=(i+1);r++){
         var row = table.insertRow(r);
@@ -474,7 +484,7 @@ function recalculate() {
                         cell.className = 'totalMonPayColor';
                     }
                 }else{
-                    var th = document.createElement('th');
+                    th = document.createElement('th');
                     row.appendChild(th);
 
                     th.innerHTML = payOffChoice;
@@ -483,7 +493,7 @@ function recalculate() {
 
             if (c > 0) {
                 if (r == 0) {
-                    var th = document.createElement('th');
+                    th = document.createElement('th');
                     row.appendChild(th);
                     var headerDate = new Date();
                     headerDate.setDate(1);
@@ -548,7 +558,7 @@ function compareLoans(whatIfData) {
         diffInterest =diffInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         newInterest =newInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 
-        $("#compareLoansDiv").html(function(j, origText){
+        compareLoansDiv.html(function(j, origText){
             return origText +'<div id="compareLoans'+ color +'" class=" compareLoans backGround'+ color +'"></div>';
         });
 
