@@ -1,11 +1,11 @@
 //developmental small loan
-document.getElementById('loanAmount0').value = 15000;
-document.getElementById('loanInterestRate0').value = 17;
-document.getElementById('minPayment0').value = 600;
+//document.getElementById('loanAmount0').value = 15000;
+//document.getElementById('loanInterestRate0').value = 17;
+//document.getElementById('minPayment0').value = 600;
 //developmental House loan
-//            document.getElementById('loanAmount0').value= 238500;
-//            document.getElementById('loanInterestRate0').value= 3.125;
-//            document.getElementById('minPayment0').value= 1021.68;
+            document.getElementById('loanAmount0').value= 238500;
+            document.getElementById('loanInterestRate0').value= 3.125;
+            document.getElementById('minPayment0').value= 1021.68;
 
 $("#forkme_banner").click(function(){
     var src = "images/AOD.JPG";
