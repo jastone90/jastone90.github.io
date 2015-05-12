@@ -1,21 +1,21 @@
 //developmental small loan
-//document.getElementById('loanAmount0').value = 15000;
-//document.getElementById('loanInterestRate0').value = 17;
-//document.getElementById('minPayment0').value = 600;
+document.getElementById('loanAmount0').value = 15000;
+document.getElementById('loanInterestRate0').value = 17;
+document.getElementById('minPayment0').value = 600;
 //developmental House loan
-            document.getElementById('loanAmount0').value= 238500;
-            document.getElementById('loanInterestRate0').value= 3.125;
-            document.getElementById('minPayment0').value= 1021.68;
+//            document.getElementById('loanAmount0').value= 238500;
+//            document.getElementById('loanInterestRate0').value= 3.125;
+//            document.getElementById('minPayment0').value= 1021.68;
 
-$("#forkme_banner").click(function(){
-    var src = "images/AOD.JPG";
-    var img = document.createElement("img");
-    img.src = src;
-    //img.width = width;
-    //img.height = height;
-    //img.alt = alt;
-    this.appendChild(img);
-});
+//$("#forkme_banner").click(function(){
+//    var src = "images/AOD.JPG";
+//    var img = document.createElement("img");
+//    img.src = src;
+//    //img.width = width;
+//    //img.height = height;
+//    //img.alt = alt;
+//    this.appendChild(img);
+//});
 
 
 
@@ -66,12 +66,10 @@ function addLoan() {
 }
 
 function removeLoan(e) {
+    $('#loanInputSection'+ numberOfLoans).remove();
     numberOfLoans --;
-    var parent = e.parentNode.parentNode.parentNode;
-    parent.removeChild(e.parentNode.parentNode);
 
-    document.getElementById('loanRemove'+ (numberOfLoans)).setAttribute("class", "floatRight removeLoan");
-
+    $('#loanRemove'+ numberOfLoans).attr("class", "floatRight removeLoan");
     $("#loanRemove"+numberOfLoans).click(function(){
         removeLoan(this);
     });
@@ -83,14 +81,12 @@ function removeLoan(e) {
     if(debtLineChart){
         debtLineChart.destroy();
         debtPieChart.destroy();
-
-        document.getElementById('pieLegend').removeChild(document.getElementById('pieLegendPrincipal'));
-        document.getElementById('pieLegend').removeChild(document.getElementById('pieLegendInterest'));
+        $('#pieLegend').empty();
     }
 }
 
 function calculate() {
-    document.getElementById('errorSpan').innerHTML = "";
+    $('#errorSpan').html("");
     if(debtLineChart){
         debtLineChart.destroy();
         debtPieChart.destroy();
@@ -107,6 +103,10 @@ function calculate() {
         labels: allDates[0],
         datasets: []
     };
+    var monthNames = ["Jan", "Feb", "March", "April", "May", "June",
+        "July", "Aug", "Sept", "Oct", "Nov", "Dec"
+    ];
+
 
     for( var i=0; i<=numberOfLoans; i++){
 
@@ -115,14 +115,15 @@ function calculate() {
         var minPayment = parseFloat(document.getElementById('minPayment'+i).value);
 
         if (minPayment < parseFloat(((loan * interestRate) / 12).toFixed(2))) {
-            document.getElementById('errorSpan').innerHTML = "Dude You need a higher minimum Payment";
+            $('#errorSpan').html('A higher monthly payment is required to reduce the loan balance');
+            $('#pieLegend').empty();
             return;
         }
 
         var originalLoanAmount = loan;
         var date = new Date();
         date.setDate(1);
-        var label = (date.getMonth() + 1) + "/" + date.getFullYear();
+        var label = (monthNames[date.getMonth()]) + " " + date.getFullYear();
         var debt=[loan];
         var dates=[label];
 
@@ -136,7 +137,7 @@ function calculate() {
             debt.push(loan);
 
             date = new Date(date.setMonth(date.getMonth() + 1));
-            label = (date.getMonth() + 1) + "/" + date.getFullYear();
+            label = (monthNames[date.getMonth()]) + " " + date.getFullYear();
             dates.push(label);
         }
 
@@ -183,12 +184,18 @@ function calculate() {
         }
     }
 
+    var lineOptions = {
+        pointHitDetectionRadius: 5,
+        tooltipTemplate: "<%if (label){%><%=label%>: <%}%>$<%=value.toFixed(2)%>",
+        multiTooltipTemplate: "$<%= value.toFixed(2) %>",
+        scaleLabel: "$<%=value%>"
+    };
 
 
     // Line Chart
     debtLineData.labels = dateLabels;
     var debtLineGraph = document.getElementById('debtLineGraph').getContext('2d');
-    debtLineChart = new Chart(debtLineGraph).Line(debtLineData);
+    debtLineChart = new Chart(debtLineGraph).Line(debtLineData,lineOptions);
 
     // Pie Chart
     var pieData = [
@@ -402,14 +409,18 @@ function recalculate() {
         }
         //alert('Repurposed Min Payments: ' + repurposedMinPayment + '\n Current Additional Pay: ' +currentAdditionalPay +'\n Total:'+ totalMonthlyPayment);
     }
+    var monthNames = ["Jan", "Feb", "March", "April", "May", "June",
+        "July", "Aug", "Sept", "Oct", "Nov", "Dec"
+    ];
+
     var date = new Date();
     date.setDate(1);
-    var label = (date.getMonth()+1) + "/" + date.getFullYear();
+    var label = (monthNames[date.getMonth()]) + " " + date.getFullYear();
     var dates = [label];
 
     for (var m=0; m < month; m++){
         date = new Date(date.setMonth(date.getMonth()+1));
-        label = (date.getMonth()+1) + "/" + date.getFullYear();
+        label = (monthNames[date.getMonth()]) + " " + date.getFullYear();
         dates.push(label);
     }
 
@@ -445,10 +456,17 @@ function recalculate() {
             data: debt[n]});
     }
 
+    var lineOptions = {
+        pointHitDetectionRadius: 5,
+        tooltipTemplate: "<%if (label){%><%=label%>: <%}%>$<%=value.toFixed(2)%>",
+        multiTooltipTemplate: "$<%= value.toFixed(2) %>",
+        scaleLabel: "$<%=value%>"
+    };
+
     // Line Chart
     debtLineData.labels = dates;
     var debtLineGraph = document.getElementById('whatIfDebtLineGraph').getContext('2d');
-    whatIfDebtLineChart = new Chart(debtLineGraph).Line(debtLineData);
+    whatIfDebtLineChart = new Chart(debtLineGraph).Line(debtLineData, lineOptions);
 
     // Pie Chart
     var pieData = [
@@ -492,7 +510,7 @@ function recalculate() {
                     cell = row.insertCell(c);
                     if (r > 0 && r != i + 1) {
                         cell.innerHTML = '<span class=bold>Loan Balance: $' + paymentTableDebt[r - 1][0].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,') + '</span></br>' +
-                        '<span class="smallFont interest">Accrued Interest (' + (interestRate[r - 1] * 100).toFixed(2) + '%)</span></br>' +
+                        '<span class="smallFont interest">Accrued Interest (' + (interestRate[r - 1] * 100).toFixed(3) + '%)</span></br>' +
                         '<span class="smallFont">Monthly Payment</span>';
                         cell.className = 'tableHeight backGround' + paymentTableColor[r - 1];
                     }
