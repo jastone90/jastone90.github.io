@@ -3,9 +3,9 @@ document.getElementById('loanAmount0').value = 15000;
 document.getElementById('loanInterestRate0').value = 17;
 document.getElementById('minPayment0').value = 600;
 //developmental House loan
-//            document.getElementById('loanAmount0').value= 238500;
-//            document.getElementById('loanInterestRate0').value= 3.125;
-//            document.getElementById('minPayment0').value= 1021.68;
+            document.getElementById('loanAmount0').value= 238500;
+            document.getElementById('loanInterestRate0').value= 3.125;
+            document.getElementById('minPayment0').value= 1021.68;
 
 //$("#forkme_banner").click(function(){
 //    var src = "images/AOD.JPG";
@@ -171,6 +171,28 @@ function calculate() {
             pointStrokeColor ="f8bf5b";
         }
 
+        if(dates.length>numberOfDates){
+            numberOfDates = dates.length;
+            dateLabels= dates;
+        }
+
+        if(debt.length>50  && numberOfLoans==0){
+            var arrSize = debt.length;
+            var overflow = arrSize/50 | 0; //round down
+            var q = 1;
+            while(q<arrSize){
+                for(var z=0;z<overflow;z++){
+                    if(q != debt.length -1) {
+                        debt.splice(q, 1);
+                        dateLabels.splice(q, 1);
+                    }
+                }
+                q++;
+            }
+
+        }
+
+
         debtLineData.datasets.push({fillColor: fillColor,
                                     strokeColor: strokeColor,
                                     pointColor: strokeColor,
@@ -178,14 +200,11 @@ function calculate() {
                                     datasetFill : false,
                                     data: debt});
 
-        if(dates.length>numberOfDates){
-            numberOfDates = dates.length;
-            dateLabels= dates;
-        }
+
     }
 
     var lineOptions = {
-        pointHitDetectionRadius: 5,
+        pointHitDetectionRadius: 2,
         tooltipTemplate: "<%if (label){%><%=label%>: <%}%>$<%=value.toFixed(2)%>",
         multiTooltipTemplate: "$<%= value.toFixed(2) %>",
         scaleLabel: "$<%=value%>"
@@ -448,6 +467,23 @@ function recalculate() {
             strokeColor = "#f9c874";
             pointStrokeColor ="f8bf5b";
         }
+
+        if(debt[n].length>50  && loanData.length==1){
+            var arrSize = debt[n].length;
+            var overflow = arrSize/50 | 0; //round down
+            var q = 1;
+            while(q<arrSize){
+                    for(var z=0;z<overflow;z++){
+                    if(q != debt[n].length -1) {
+                        debt[n].splice(q, 1);
+                        dates.splice(q, 1);
+                        }
+                    }
+                q++;
+            }
+
+        }
+
         debtLineData.datasets.push({fillColor: fillColor,
             strokeColor: strokeColor,
             pointColor: strokeColor,
@@ -457,7 +493,7 @@ function recalculate() {
     }
 
     var lineOptions = {
-        pointHitDetectionRadius: 5,
+        pointHitDetectionRadius: 2,
         tooltipTemplate: "<%if (label){%><%=label%>: <%}%>$<%=value.toFixed(2)%>",
         multiTooltipTemplate: "$<%= value.toFixed(2) %>",
         scaleLabel: "$<%=value%>"
@@ -576,6 +612,9 @@ function compareLoans(whatIfData) {
 
     var totalCost=0;
     var totalDiffInterest =0;
+    var monthsSaved = 0;
+    var totalMonths = 0;
+
     for(var i=0;i<whatIfData[0].length;i++){
         totalCost +=whatIfData[0][i];
         var loanAmount =  whatIfData[0][i].toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
@@ -593,6 +632,11 @@ function compareLoans(whatIfData) {
         diffInterest =diffInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
         newInterest =newInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
 
+        if(newTime >totalMonths){
+            totalMonths = newTime;
+            monthsSaved = diffTime;
+        }
+
         compareLoansDiv.html(function(j, origText){
             return origText +'<div id="compareLoans'+ color +'" class=" compareLoans backGround'+ color +'"></div>';
         });
@@ -607,11 +651,15 @@ function compareLoans(whatIfData) {
 
 
     totalCost= totalCost.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    totalDiffInterest = -totalDiffInterest;
     totalDiffInterest = totalDiffInterest.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     compareLoansDiv.html(function(j, origText){
         return origText +'<div id="compareLoanSummary" class="center"><h3>New Cost of the Loan(s): $'+totalCost +'<span class="green"> ($'+totalDiffInterest+')</span></h3></div>';
     });
 
+    $('#finalSummary').html('By putting an extra <span class="bold">$'+ additionalPay.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')+'</span> per month towards your loan(s) you were able to save ' +
+                                                                    '<span class="bold green">$'+ totalDiffInterest+ '</span> and finish paying your loan(s) ' +
+                                                                    '<span class="bold green">'+ -monthsSaved+ '</span> months sooner!');
 
 
     $('#whatIfCompare').slideDown(500, function(){
